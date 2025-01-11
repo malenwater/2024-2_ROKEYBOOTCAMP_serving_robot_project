@@ -1,5 +1,4 @@
 install/
 log/
 build/
-src/serving_robot/serving_robot/kitchen_display/pub.py
 .vscode/
