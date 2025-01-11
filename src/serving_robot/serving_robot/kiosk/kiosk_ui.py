@@ -10,16 +10,28 @@ class KioskDialog(QtWidgets.QDialog):
 
         # 위젯 딕셔너리 정의
         self.widgets = {
-            "label1": self.findChild(QtWidgets.QLabel, "label1"),
-            "button1": self.findChild(QtWidgets.QPushButton, "button1")
+            "foodButton": self.findChild(QtWidgets.QPushButton, "foodButton"),
+            "sidefoodButton": self.findChild(QtWidgets.QPushButton, "sidefoodButton"),
+            "drinkButton": self.findChild(QtWidgets.QPushButton, "drinkButton"),
+            # 주문하기 18개 위젯 만들어서 1개의 함수로 통일 시키기
+            # 결제하기 함수 1개
+            # -, + 이 둘도 하나의 함수로 만들기
+            # 라벨 음식갯수 라벨, 총 가격과 메뉴별 가격 라벨 위젯
         }
 
         # 버튼에 함수 연결
-        self.widgets["button1"].clicked.connect(self.on_button_click)
+        self.widgets["foodButton"].clicked.connect(self.on_scroll_move_button_click)
+        self.widgets["sidefoodButton"].clicked.connect(self.on_scroll_move_button_click)
+        self.widgets["drinkButton"].clicked.connect(self.on_scroll_move_button_click)
 
-    def on_button_click(self):
-        # 버튼 클릭 시 실행될 함수
-        self.widgets["label1"].setText("버튼이 클릭되었습니다!")
+
+    def on_scroll_move_button_click(self):
+        sender = self.sender()  # 이벤트 발생 위젯 (버튼)
+        if sender:
+            button_name = sender.objectName()  # 버튼의 이름
+            if(button_name == 'foodButton'):
+                print("hi")
+                # 슬라이더 조종
 
 def main(args=None):
     app = QtWidgets.QApplication(sys.argv)
