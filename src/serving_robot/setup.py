@@ -1,4 +1,6 @@
 from setuptools import find_packages, setup
+import glob
+import os
 
 package_name = 'serving_robot'
 
@@ -10,6 +12,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        ('share/' + package_name + '/launch', glob.glob(os.path.join('launch', '*.launch.py'))),
+        ('share/' + package_name + '/param', glob.glob(os.path.join('param', '*.yaml'))),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -20,6 +24,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'test_pub = serving_robot.test_node.publish_node_v2:main',
+            'test_sub = serving_robot.test_node.subscribe_node_v2:main',
         ],
     },
 )
