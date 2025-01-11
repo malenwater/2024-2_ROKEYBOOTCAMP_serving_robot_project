@@ -1,0 +1,5 @@
+int32[] data  # 요청 데이터 필드 (Int32 배열)
+---
+bool success  # 응답 성공 여부
+string message  # 응답 메시지
+
