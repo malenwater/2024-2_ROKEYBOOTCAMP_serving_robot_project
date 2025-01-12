@@ -52,7 +52,10 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true"/>
+    <string notr="true">QPushButton:pressed {
+    background-color: grey;  /* 버튼을 눌렀을 때 배경색 */
+    color: white;            /* 버튼을 눌렀을 때 글자색 */
+}</string>
    </property>
    <property name="text">
     <string>음식</string>
@@ -71,7 +74,10 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true"/>
+    <string notr="true">QPushButton:pressed {
+    background-color: grey;  /* 버튼을 눌렀을 때 배경색 */
+    color: white;            /* 버튼을 눌렀을 때 글자색 */
+}</string>
    </property>
    <property name="text">
     <string>사이드</string>
@@ -87,7 +93,10 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true"/>
+    <string notr="true">QPushButton:pressed {
+    background-color: grey;  /* 버튼을 눌렀을 때 배경색 */
+    color: white;            /* 버튼을 눌렀을 때 글자색 */
+}</string>
    </property>
    <property name="text">
     <string>음료</string>
@@ -2778,7 +2787,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
+          <y>-946</y>
           <width>562</width>
           <height>1073</height>
          </rect>
