@@ -10,7 +10,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from datetime import datetime, timedelta
 from PyQt5.QtGui import QFont
 import os
-sys.path.append('/home/rokey/Documents/GitHub/ROKEY_serving_robot_A-2/src/serving_robot')
+sys.path.append('./src/serving_robot')
 from serving_robot.database import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
 
 plt.rcParams['axes.unicode_minus'] =False
