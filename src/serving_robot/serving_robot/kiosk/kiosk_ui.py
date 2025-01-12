@@ -1,5 +1,6 @@
 import sys
 from PyQt5 import QtWidgets, uic
+from playsound import playsound
 
 class KioskDialog(QtWidgets.QDialog):
     def __init__(self):
@@ -147,10 +148,25 @@ class KioskDialog(QtWidgets.QDialog):
         print(f"Order confirmed! Total price: {total_price}원")
         self.reset_order()
         # 결제 처리 관련 로직 추가 가능
+        
+        # 로봇 도착할때 사용할거 일단 여기에
+        self.alarm_arrive_robot_sound()
+        self.alarm_arrive_robot_ui()
+        #
     # -------------------------------------------------------------------------------
     
     def alarm_arrive_robot_sound(self):
-        pass
+            """
+            음식 도착 알람을 울리는 함수
+            :param file_path: 알람음 파일 경로
+            """
+            if os.path.exists(file_path):  # 파일이 존재하는지 확인
+                try:
+                    playsound(file_path)  # 알람음 재생
+                except Exception as e:
+                    print(f"알람음 재생 중 오류 발생: {e}")
+            else:
+                print("알람음 파일이 존재하지 않습니다.")
     
     def alarm_arrive_robot_ui(self):
         pass
