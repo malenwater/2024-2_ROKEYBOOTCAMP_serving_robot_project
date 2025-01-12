@@ -1,5 +1,9 @@
 import sys
 from PyQt5 import QtWidgets, uic
+import threading
+import rclpy
+from rclpy.node import Node
+from serving_robot_interface.srv import MySrv
 #from playsound import playsound
 
 class RobotArrivalDialog(QtWidgets.QDialog):
@@ -18,6 +22,31 @@ class RobotArrivalDialog(QtWidgets.QDialog):
         self.return_robot = self.findChild(QtWidgets.QPushButton, "return_robot")
         self.return_robot.clicked.connect(self.close)  # 버튼 클릭 시 창 닫기
 
+
+class ClientNode(Node):
+    def __init__(self):
+        super().__init__('client_node')
+        self.client = self.create_client(MySrv, 'order_srv')
+        while not self.client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Service not available, waiting again...')
+
+    def send_request(self, data):
+        if len(data) % 3 != 0:
+            self.get_logger().error('Data length must be a multiple of 3')
+            return
+
+        request = MySrv.Request()  # 서비스 요청 생성
+        request.data = data
+        future = self.client.call_async(request)
+        future.add_done_callback(self.handle_response)
+
+    def handle_response(self, future):
+        try:
+            response = future.result()
+            self.get_logger().info(f'Response: {response.message}')
+        except Exception as e:
+            self.get_logger().error(f'Service call failed: {e}')
+            
 class KioskDialog(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
@@ -160,12 +189,25 @@ class KioskDialog(QtWidgets.QDialog):
     def handle_order(self):
         #해야할 것 : 왼쪽 주문리스트 사라지게 하기, 결제 완료 창 뜨게 하기
         # UI 초기화
-        self.reset_order()
+        data = [1, 2, 3]  # 예시 데이터 (사용자가 입력한 데이터로 수정 필요)
+        self.send_order(data)
         # 결제 처리 관련 로직 추가 가능
         self.alarm_arrive_robot_sound()
         #
     # -------------------------------------------------------------------------------
     
+    def send_order(self, data):
+        # ROS 2 서비스로 데이터를 보내는 쓰레드 실행
+        order_thread = threading.Thread(target=self.send_order_thread, args=(data,))
+        order_thread.start()
+
+    def send_order_thread(self, data):
+        rclpy.init()
+        node = ClientNode()
+        node.send_request(data)
+        rclpy.spin(node)
+        rclpy.shutdown()
+
     def alarm_arrive_robot_sound(self):
             """
             음식 도착 알람을 울리는 함수
@@ -183,6 +225,7 @@ class KioskDialog(QtWidgets.QDialog):
 def main(args=None):
     app = QtWidgets.QApplication(sys.argv)
     dialog = KioskDialog()
+    dialog.show()
     dialog.exec_()
 
 if __name__ == '__main__':
