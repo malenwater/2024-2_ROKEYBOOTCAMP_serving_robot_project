@@ -39,14 +39,18 @@ class KioskDialog(QtWidgets.QDialog):
         for i in range(1, 19):
             order_name = self.__make_name_widgets("order_",self.menu_order[self.menu_number[i]])
             select_name = self.__make_name_widgets("selectButton_",self.menu_order[self.menu_number[i]])
+            count_name = self.__make_name_widgets("count_",self.menu_order[self.menu_number[i]])
             plusCount_name = self.__make_name_widgets("plusCountButton_",self.menu_order[self.menu_number[i]])
             minusCount_name = self.__make_name_widgets("minusCountButton_",self.menu_order[self.menu_number[i]])
             price_name = self.__make_name_widgets("price_",self.menu_order[self.menu_number[i]])
+            
             self.widgets[select_name] = self.findChild(QtWidgets.QPushButton, f"selectButton_{i}")
             self.widgets[plusCount_name] = self.findChild(QtWidgets.QPushButton, f"plusCountButton_{i}")
             self.widgets[minusCount_name] = self.findChild(QtWidgets.QPushButton, f"minusCountButton_{i}")
             self.widgets[order_name] = self.findChild(QtWidgets.QFrame, order_name)
             self.widgets[price_name] = self.findChild(QtWidgets.QLabel, price_name)
+            self.widgets[count_name] = self.findChild(QtWidgets.QLabel, count_name)
+            
             self.widgets[select_name].clicked.connect(lambda _, x=i: self.change_quantity(x, 1))
             self.widgets[plusCount_name].clicked.connect(lambda _, x=i: self.change_quantity(x, 1))
             self.widgets[minusCount_name].clicked.connect(lambda _, x=i: self.change_quantity(x, -1))
@@ -62,19 +66,20 @@ class KioskDialog(QtWidgets.QDialog):
 
         # 라벨 업데이트 함수
         self.update_labels()
+        
     def __order_menu_widget(self,menu_name):
         self.widgets[menu_name].setVisible(True)
         self.widgets["orders_layout"].addWidget(self.widgets[menu_name])
+        
     def __disorder_menu_widget(self,menu_name):
         self.widgets[menu_name].setVisible(False)
         self.widgets["orders_layout"].removeWidget(self.widgets[menu_name])
+        
     def __make_name_widgets(self, name, widget_number):
         return name + widget_number
-    # ---------------------------------------------------------------------------------------------------
+
     def __on_scroll_move_button_click(self):
         # 버튼 누르면 특정위치 스크롤바 이동
-        # 이 안이랑 필요하다면 바깥에 값을 수정해서 구현해주세요
-        # 이를 위해서 아마 scroll 바의 값을 선언해야할 겁니다. 위 self.widgets에 넣어서 사용해주세요.
         
         sender = self.sender()  # 어떤 버튼이 눌렸는지 확인
         scroll_area = self.widgets.get("menu")  # 스크롤 영역 가져오기
@@ -92,7 +97,6 @@ class KioskDialog(QtWidgets.QDialog):
         elif sender == self.widgets["drinkButton"]:
             scroll_bar.setValue(scroll_bar.maximum())  # 맨 아래로 이동
 
-    # ---------------------------------------------------------------------------------------------------
     
     def change_quantity(self, menu_index, change):
         """특정 메뉴의 수량을 증가 또는 감소시킴"""
@@ -105,14 +109,13 @@ class KioskDialog(QtWidgets.QDialog):
                 self.__order_menu_widget(order_name)
         if self.menu_quantities[menu_index - 1] == 0:
             self.__disorder_menu_widget(order_name)
-        self.widgets[count_name].setText(self.menu_quantities[menu_index - 1])
+        self.widgets[count_name].setText(str(self.menu_quantities[menu_index - 1]))
         self.update_labels()
 
     def update_labels(self):
         """장바구니 수량과 가격 라벨을 업데이트
             해야할 것: 개수 라벨 업데이트 + 알맞은 가격 업데이트, 
         """
-        total_quantity = sum(self.menu_quantities)
         total_price = sum(q * p for q, p in zip(self.menu_quantities, self.menu_prices))
 
         # 장바구니 총 수량, 가격 업데이트
@@ -126,16 +129,15 @@ class KioskDialog(QtWidgets.QDialog):
                 total_menu_price = self.menu_quantities[i] * self.menu_prices[i]
                 self.widgets[price_name].setText(f"{total_menu_price}원")
 
-
-        # # 메뉴판에서 상품 이름과 가격 업데이트
-        # for i, label in enumerate(self.menu_labels.values()):
-        #     if label:
-        #         label.setText(f"상품 {i + 1}")
-
-        # for i, label in enumerate(self.menu_price_labels.values()):
-        #     if label:
-        #         label.setText(f"{self.menu_prices[i]}원")
-
+    def reset_order(self):
+        for i in range(len(self.menu_quantities)):
+            order_name = self.__make_name_widgets("order_",str(i+1))
+            if self.menu_quantities[i] != 0:
+                self.__disorder_menu_widget(order_name)
+            self.menu_quantities[i] = 0  # 각 메뉴의 수량을 0으로 설정
+        if self.widgets["total_price"]:
+            self.widgets["total_price"].setText(f"총 가격: 0원")
+            
     def handle_order(self):
         """
         결제하기 버튼 클릭 시 동작
@@ -143,6 +145,7 @@ class KioskDialog(QtWidgets.QDialog):
         """
         total_price = sum(q * p for q, p in zip(self.menu_quantities, self.menu_prices))
         print(f"Order confirmed! Total price: {total_price}원")
+        self.reset_order()
         # 결제 처리 관련 로직 추가 가능
     # -------------------------------------------------------------------------------
     def arrive_robot(self):
