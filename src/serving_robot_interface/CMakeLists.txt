@@ -6,11 +6,17 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # find dependencies
+find_package(builtin_interfaces REQUIRED)
 find_package(ament_cmake REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+set(srv_files "srv/MySrv.srv")
 
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${srv_files}
+  DEPENDENCIES builtin_interfaces)
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
