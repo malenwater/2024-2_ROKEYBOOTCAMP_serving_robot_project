@@ -148,6 +148,12 @@ class KioskDialog(QtWidgets.QDialog):
         self.reset_order()
         # 결제 처리 관련 로직 추가 가능
     # -------------------------------------------------------------------------------
+    
+    def alarm_arrive_robot_sound(self):
+        pass
+    
+    def alarm_arrive_robot_ui(self):
+        pass
     def arrive_robot(self):
         """
         헤애힐 것 :어떤 노드 신호를 받기(action), 후에 받은 후로부터 시간을 재서 보내주기, 사용자가 도착완료 버튼 누르면 result 혹은 canceld 상태보내기,
