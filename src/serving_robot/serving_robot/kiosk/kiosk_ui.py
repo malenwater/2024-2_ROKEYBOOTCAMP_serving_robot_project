@@ -1,12 +1,15 @@
 import sys
 from PyQt5 import QtWidgets, uic
-# from playsound import playsound
+#from playsound import playsound
 
 class RobotArrivalDialog(QtWidgets.QDialog):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        # UI 파일 로드
-        ui_file = "./src/serving_robot/resource/ui/kiosk_arrival.ui"
+
+    def __init__(self):
+        super().__init__()
+        # 새로운 UI 파일 로드
+        ui_file = "/home/gh/바탕화면/ROKEY_serving_robot_A-2/src/serving_robot/resource/ui/kiosk_arrival.ui"
+        uic.loadUi(ui_file, self)
+
         try:
             uic.loadUi(ui_file, self)
         except FileNotFoundError:
@@ -27,6 +30,7 @@ class KioskDialog(QtWidgets.QDialog):
                        "팔보채","고추잡채","꽃 빵",
                        "사이다","콜라","환타",
                        "소주","맥주","고량주",]
+        
         # 장바구니와 관련된 라벨 정의
         self.total_price = 0
         self.menu_quantities = [0] * 18  # 각 메뉴의 수량
@@ -157,15 +161,16 @@ class KioskDialog(QtWidgets.QDialog):
         #해야할 것 : 왼쪽 주문리스트 사라지게 하기, 결제 완료 창 뜨게 하기
         # UI 초기화
         self.reset_order()
+        # 결제 처리 관련 로직 추가 가능
         self.alarm_arrive_robot_sound()
+        #
+    # -------------------------------------------------------------------------------
     
     def alarm_arrive_robot_sound(self):
             """
             음식 도착 알람을 울리는 함수
             :param file_path: 알람음 파일 경로
             """
-    
-
     def arrive_robot(self):
         """
         헤애힐 것 :어떤 노드 신호를 받기(action), 후에 받은 후로부터 시간을 재서 보내주기, 사용자가 도착완료 버튼 누르면 result 혹은 canceld 상태보내기,
