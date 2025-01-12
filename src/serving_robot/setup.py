@@ -15,7 +15,7 @@ setup(
         ('share/' + package_name + '/launch', glob.glob(os.path.join('launch', '*.launch.py'))),
         ('share/' + package_name + '/param', glob.glob(os.path.join('param', '*.yaml'))),
     ],
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'PyQt5', 'rclpy', 'mysql-connector-python', 'playsound'],
     zip_safe=True,
     maintainer='sunwolee',
     maintainer_email='128200788+malenwater@users.noreply.github.com',
@@ -26,8 +26,12 @@ setup(
         'console_scripts': [
             'test_pub = serving_robot.test_node.publish_node_v2:main',
             'test_sub = serving_robot.test_node.subscribe_node_v2:main',
+
             'test_server = serving_robot.serving_robot.kitchen_display.kit copy:main',
             'test_client = serving_robot.serving_robot.kitchen_display.kit pub:main',
+
+            'serving_robot_ui = serving_robot.database.ui_tab:main'
+            'kiosk_ui = serving_robot.kiosk.kiosk_ui:main',
         ],
     },
 )

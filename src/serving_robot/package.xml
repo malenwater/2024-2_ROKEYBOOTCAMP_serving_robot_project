@@ -7,6 +7,8 @@
   <maintainer email="128200788+malenwater@users.noreply.github.com">sunwolee</maintainer>
   <license>TODO: License declaration</license>
 
+  <exec_depend>python3-playsound</exec_depend>
+  <depend>playsound</depend>
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
   <depend>python3-pyside2</depend>

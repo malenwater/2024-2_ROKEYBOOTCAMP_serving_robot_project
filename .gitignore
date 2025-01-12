@@ -4,3 +4,6 @@ build/
 .vscode/
 __pycache__
 img/
+*.tar
+.env
+sound/
