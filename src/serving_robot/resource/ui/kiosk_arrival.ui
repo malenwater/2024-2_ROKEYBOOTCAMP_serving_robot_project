@@ -6,37 +6,37 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>900</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>도착 알림</string>
   </property>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="return_robot">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>170</y>
-     <width>381</width>
-     <height>121</height>
+     <x>-10</x>
+     <y>380</y>
+     <width>911</width>
+     <height>321</height>
     </rect>
    </property>
    <property name="text">
     <string>로봇 돌려보내기</string>
    </property>
   </widget>
-  <widget class="QLabel" name="return_robot">
+  <widget class="QLabel" name="arrival_text">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>-10</y>
-     <width>361</width>
-     <height>181</height>
+     <x>70</x>
+     <y>60</y>
+     <width>781</width>
+     <height>271</height>
     </rect>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:20pt;&quot;&gt;음식이 도착하였습니다&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:20pt;&quot;&gt;음식을 내려주세요&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:22pt; font-weight:600;&quot;&gt;음식이 도착하였습니다&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:22pt; font-weight:600;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:22pt; font-weight:600;&quot;&gt;음식을 내려주세요&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
  </widget>

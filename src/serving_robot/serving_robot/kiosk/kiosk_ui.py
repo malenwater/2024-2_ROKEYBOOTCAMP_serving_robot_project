@@ -1,6 +1,22 @@
 import sys
 from PyQt5 import QtWidgets, uic
 
+class RobotArrivalDialog(QtWidgets.QDialog):
+    def __init__(self):
+        super().__init__()
+        # 새로운 UI 파일 로드
+        ui_file = "/home/gh/바탕화면/ROKEY_serving_robot_A-2/src/serving_robot/resource/ui/kiosk_arrival.ui"
+        uic.loadUi(ui_file, self)
+
+        try:
+            uic.loadUi(ui_file, self)
+        except FileNotFoundError:
+            print("UI file not found!")
+
+        # 버튼 연결
+        self.return_robot = self.findChild(QtWidgets.QPushButton, "return_robot")
+        self.return_robot.clicked.connect(self.close) # 버튼 클릭 시 창 닫기
+
 class KioskDialog(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
@@ -137,10 +153,21 @@ class KioskDialog(QtWidgets.QDialog):
         #         label.setText(f"{self.menu_prices[i]}원")
 
     def handle_order(self):
-        """
-        결제하기 버튼 클릭 시 동작
-        해야할 것 : 왼쪽 주문리스트 사라지게 하기, 결제 완료 창 뜨게 하기
-        """
+        
+        #결제하기 버튼 클릭 시 동작
+        total_price = sum(q * p for q, p in zip(self.menu_quantities, self.menu_prices))
+        print(f"Order confirmed! Total price: {total_price}원")
+        
+        # 주문 완료 처리: 장바구니 비우기
+        self.menu_quantities = [0] * 18
+        self.update_labels()  # UI 업데이트
+
+        # 로봇 도착 안내 창 띄우기
+        robot_arrival_dialog = RobotArrivalDialog()
+        robot_arrival_dialog.exec_()  # 모달 창 띄우기
+
+        #해야할 것 : 왼쪽 주문리스트 사라지게 하기, 결제 완료 창 뜨게 하기
+        
         total_price = sum(q * p for q, p in zip(self.menu_quantities, self.menu_prices))
         print(f"Order confirmed! Total price: {total_price}원")
         # 결제 처리 관련 로직 추가 가능
