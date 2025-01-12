@@ -1,3 +1,4 @@
-float32 req
+int32[] data
 ---
-float32 res
+bool success
+string message
