@@ -11,20 +11,9 @@ class RobotArrivalDialog(QtWidgets.QDialog):
             uic.loadUi(ui_file, self)
         except FileNotFoundError:
             print("UI file not found!")
-
         # 버튼 연결
         self.return_robot = self.findChild(QtWidgets.QPushButton, "return_robot")
-        if self.return_robot:
-            self.return_robot.clicked.connect(self.close_dialog)  # 버튼 클릭 시 창 닫기
-        else:
-            print("return_robot 버튼을 찾을 수 없습니다.")
-
-        print("here")
-        print(self.return_robot.objectName())
-
-    def close_dialog(self):
-        print("and hi")
-        self.close()  # QDialog의 기본 close 메서드를 호출
+        self.return_robot.clicked.connect(self.close)  # 버튼 클릭 시 창 닫기
 
 class KioskDialog(QtWidgets.QDialog):
     def __init__(self):
@@ -39,6 +28,7 @@ class KioskDialog(QtWidgets.QDialog):
                        "사이다","콜라","환타",
                        "소주","맥주","고량주",]
         # 장바구니와 관련된 라벨 정의
+        self.total_price = 0
         self.menu_quantities = [0] * 18  # 각 메뉴의 수량
         self.menu_prices = [6000,7000,8000,
                        8000,7000,7000,
@@ -141,11 +131,11 @@ class KioskDialog(QtWidgets.QDialog):
         """장바구니 수량과 가격 라벨을 업데이트
             해야할 것: 개수 라벨 업데이트 + 알맞은 가격 업데이트, 
         """
-        total_price = sum(q * p for q, p in zip(self.menu_quantities, self.menu_prices))
+        self.total_price = sum(q * p for q, p in zip(self.menu_quantities, self.menu_prices))
 
         # 장바구니 총 수량, 가격 업데이트
         if self.widgets["total_price"]:
-            self.widgets["total_price"].setText(f"총 가격: {total_price}원")
+            self.widgets["total_price"].setText(f"총 가격: {self.total_price}원")
 
         # 각 메뉴별 가격 라벨 업데이트
         for i in range(18):
@@ -164,52 +154,25 @@ class KioskDialog(QtWidgets.QDialog):
             self.widgets["total_price"].setText(f"총 가격: 0원")
             
     def handle_order(self):
-        
-        #결제하기 버튼 클릭 시 동작
-        total_price = sum(q * p for q, p in zip(self.menu_quantities, self.menu_prices))
-        print(f"Order confirmed! Total price: {total_price}원")
-        
-        # 주문 완료 처리: 장바구니 비우기
-        self.menu_quantities = [0] * 18
-        self.update_labels()  # UI 업데이트
-
-        # 로봇 도착 안내 창 띄우기
-        robot_arrival_dialog = RobotArrivalDialog(self)
-        robot_arrival_dialog.exec_()  # 모달 창 띄우기
-
         #해야할 것 : 왼쪽 주문리스트 사라지게 하기, 결제 완료 창 뜨게 하기
-        
-        total_price = sum(q * p for q, p in zip(self.menu_quantities, self.menu_prices))
-        print(f"Order confirmed! Total price: {total_price}원")
+        # UI 초기화
         self.reset_order()
-        # 결제 처리 관련 로직 추가 가능
-        
-        # 로봇 도착할때 사용할거 일단 여기에
-        # self.alarm_arrive_robot_sound()
-        # self.alarm_arrive_robot_ui()
-        #
-    # -------------------------------------------------------------------------------
+        self.alarm_arrive_robot_sound()
     
     def alarm_arrive_robot_sound(self):
             """
             음식 도착 알람을 울리는 함수
             :param file_path: 알람음 파일 경로
             """
-            if os.path.exists(file_path):  # 파일이 존재하는지 확인
-                try:
-                    playsound(file_path)  # 알람음 재생
-                except Exception as e:
-                    print(f"알람음 재생 중 오류 발생: {e}")
-            else:
-                print("알람음 파일이 존재하지 않습니다.")
     
-    def alarm_arrive_robot_ui(self):
-        pass
+
     def arrive_robot(self):
         """
         헤애힐 것 :어떤 노드 신호를 받기(action), 후에 받은 후로부터 시간을 재서 보내주기, 사용자가 도착완료 버튼 누르면 result 혹은 canceld 상태보내기,
         아마 가능하다면 result가 편할 듯, 일정시간 후에는 무조건 result 보내기, 받았을 때 소리 및 UI 구현
         """
+        robot_arrival_dialog = RobotArrivalDialog(self)
+        robot_arrival_dialog.exec_()  # 모달 창 띄우기
         pass
     
 def main(args=None):
