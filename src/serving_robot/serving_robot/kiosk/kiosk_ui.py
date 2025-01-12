@@ -1,12 +1,12 @@
 import sys
 from PyQt5 import QtWidgets, uic
-from playsound import playsound
+# from playsound import playsound
 
 class RobotArrivalDialog(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
         # 새로운 UI 파일 로드
-        ui_file = "/home/gh/바탕화면/ROKEY_serving_robot_A-2/src/serving_robot/resource/ui/kiosk_arrival.ui"
+        ui_file = "./src/serving_robot/resource/ui/kiosk_arrival.ui"
         uic.loadUi(ui_file, self)
 
         try:
@@ -16,7 +16,13 @@ class RobotArrivalDialog(QtWidgets.QDialog):
 
         # 버튼 연결
         self.return_robot = self.findChild(QtWidgets.QPushButton, "return_robot")
-        self.return_robot.clicked.connect(self.close) # 버튼 클릭 시 창 닫기
+        self.return_robot.clicked.connect(self.close_dialog) # 버튼 클릭 시 창 닫기
+        print("here")
+
+    def close_dialog(self):
+        # 버튼 클릭 시 대화 상자를 닫음
+        print("and hi")
+        self.close()  # QDialog의 기본 close 메서드를 호출
 
 class KioskDialog(QtWidgets.QDialog):
     def __init__(self):
@@ -177,8 +183,8 @@ class KioskDialog(QtWidgets.QDialog):
         # 결제 처리 관련 로직 추가 가능
         
         # 로봇 도착할때 사용할거 일단 여기에
-        self.alarm_arrive_robot_sound()
-        self.alarm_arrive_robot_ui()
+        # self.alarm_arrive_robot_sound()
+        # self.alarm_arrive_robot_ui()
         #
     # -------------------------------------------------------------------------------
     
