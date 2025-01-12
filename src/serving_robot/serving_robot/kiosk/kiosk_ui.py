@@ -1,12 +1,15 @@
 import sys
 from PyQt5 import QtWidgets, uic
-# from playsound import playsound
+#from playsound import playsound
 
 class RobotArrivalDialog(QtWidgets.QDialog):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        # UI 파일 로드
-        ui_file = "./src/serving_robot/resource/ui/kiosk_arrival.ui"
+
+    def __init__(self):
+        super().__init__()
+        # 새로운 UI 파일 로드
+        ui_file = "/home/gh/바탕화면/ROKEY_serving_robot_A-2/src/serving_robot/resource/ui/kiosk_arrival.ui"
+        uic.loadUi(ui_file, self)
+
         try:
             uic.loadUi(ui_file, self)
         except FileNotFoundError:
@@ -14,17 +17,7 @@ class RobotArrivalDialog(QtWidgets.QDialog):
 
         # 버튼 연결
         self.return_robot = self.findChild(QtWidgets.QPushButton, "return_robot")
-        if self.return_robot:
-            self.return_robot.clicked.connect(self.close_dialog)  # 버튼 클릭 시 창 닫기
-        else:
-            print("return_robot 버튼을 찾을 수 없습니다.")
-
-        print("here")
-        print(self.return_robot.objectName())
-
-    def close_dialog(self):
-        print("and hi")
-        self.close()  # QDialog의 기본 close 메서드를 호출
+        self.return_robot.clicked.connect(self.close) # 버튼 클릭 시 창 닫기
 
 class KioskDialog(QtWidgets.QDialog):
     def __init__(self):
@@ -38,6 +31,7 @@ class KioskDialog(QtWidgets.QDialog):
                        "팔보채","고추잡채","꽃 빵",
                        "사이다","콜라","환타",
                        "소주","맥주","고량주",]
+        
         # 장바구니와 관련된 라벨 정의
         self.menu_quantities = [0] * 18  # 각 메뉴의 수량
         self.menu_prices = [6000,7000,8000,
@@ -174,7 +168,7 @@ class KioskDialog(QtWidgets.QDialog):
         self.update_labels()  # UI 업데이트
 
         # 로봇 도착 안내 창 띄우기
-        robot_arrival_dialog = RobotArrivalDialog(self)
+        robot_arrival_dialog = RobotArrivalDialog()
         robot_arrival_dialog.exec_()  # 모달 창 띄우기
 
         #해야할 것 : 왼쪽 주문리스트 사라지게 하기, 결제 완료 창 뜨게 하기
@@ -185,8 +179,8 @@ class KioskDialog(QtWidgets.QDialog):
         # 결제 처리 관련 로직 추가 가능
         
         # 로봇 도착할때 사용할거 일단 여기에
-        # self.alarm_arrive_robot_sound()
-        # self.alarm_arrive_robot_ui()
+        self.alarm_arrive_robot_sound()
+        self.alarm_arrive_robot_ui()
         #
     # -------------------------------------------------------------------------------
     
@@ -211,7 +205,6 @@ class KioskDialog(QtWidgets.QDialog):
         아마 가능하다면 result가 편할 듯, 일정시간 후에는 무조건 result 보내기, 받았을 때 소리 및 UI 구현
         """
         pass
-    
 def main(args=None):
     app = QtWidgets.QApplication(sys.argv)
     dialog = KioskDialog()
