@@ -7,11 +7,15 @@
   <maintainer email="128200788+malenwater@users.noreply.github.com">sunwolee</maintainer>
   <license>TODO: License declaration</license>
 
+  <exec_depend>python3-playsound</exec_depend>
+  <depend>playsound</depend>
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
   <depend>python3-pyside2</depend>
   <depend>python3-threading</depend>
   <depend>python3-queue</depend>
+  <depend>python3-requests</depend>
+  <depend>requests</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
