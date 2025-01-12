@@ -9,8 +9,6 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from datetime import datetime, timedelta
 from PyQt5.QtGui import QFont
-import os
-sys.path.append('./src/serving_robot')
 from serving_robot.database import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
 
 plt.rcParams['axes.unicode_minus'] =False
@@ -88,14 +86,14 @@ class PopupDialog1(QDialog):
         if db_connector.connect():
             query = """
             SELECT 
-        DATE(orders.created_date) AS order_date,
-        SUM(orders_product.quantity * products.price) AS total_sales
-            FROM orders
-            INNER JOIN orders_product ON orders.order_id = orders_product.order_id
-            INNER JOIN products ON orders_product.product_id = products.product_id
-            WHERE DATE(orders.created_date) BETWEEN DATE_SUB(CURDATE(), INTERVAL 3 DAY) AND CURDATE()
-            GROUP BY DATE(orders.created_date)
-            ORDER BY order_date ASC  -- 날짜 오름차순 정렬 추가
+                DATE(orders.created_date) AS order_date,
+                SUM(orders_product.quantity * products.price) AS total_sales
+                FROM orders
+                INNER JOIN orders_product ON orders.order_id = orders_product.order_id
+                INNER JOIN products ON orders_product.product_id = products.product_id
+                WHERE DATE(orders.created_date) BETWEEN DATE_SUB(CURDATE(), INTERVAL 3 DAY) AND CURDATE()
+                GROUP BY DATE(orders.created_date)
+                ORDER BY order_date ASC  -- 날짜 오름차순 정렬 추가
             """
 
             results = db_connector.fetch_data(query)
