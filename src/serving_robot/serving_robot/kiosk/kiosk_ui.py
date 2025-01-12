@@ -7,7 +7,7 @@ class RobotArrivalDialog(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
         # 새로운 UI 파일 로드
-        ui_file = "/home/gh/바탕화면/ROKEY_serving_robot_A-2/src/serving_robot/resource/ui/kiosk_arrival.ui"
+        ui_file = "./src/serving_robot/resource/ui/kiosk_arrival.ui"
         uic.loadUi(ui_file, self)
 
         try:

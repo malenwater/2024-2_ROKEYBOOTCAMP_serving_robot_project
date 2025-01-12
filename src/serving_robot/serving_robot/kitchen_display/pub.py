@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from ros_study_msgs2.srv import MySrv  # 서비스 타입 이름 수정
+from serving_robot_interface.srv import MySrv  # 서비스 타입 이름 수정
 
 class ClientNode(Node):
     def __init__(self):

@@ -10,12 +10,10 @@
   <exec_depend>python3-playsound</exec_depend>
   <depend>playsound</depend>
   <depend>rclpy</depend>
-  <depend>std_msgs</depend>
+  <depend>serving_robot_interface</depend>
   <depend>python3-pyside2</depend>
   <depend>python3-threading</depend>
   <depend>python3-queue</depend>
-  <depend>rclpy</depend>
-  <depend>std_msgs</depend>
   <depend>PyQt5</depend>
 
 

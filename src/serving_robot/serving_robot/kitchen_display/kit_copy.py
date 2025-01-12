@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSlot
 import rclpy
 from rclpy.node import Node
-from ros_study_msgs2.srv import MySrv
+from serving_robot_interface.srv import MySrv
 
 # 테이블 업데이트 작업 클래스
 class TableUpdateTask(QRunnable):
@@ -116,7 +116,7 @@ def main(args=None):
     app = QtWidgets.QApplication(sys.argv)
 
     # UI 파일 로드
-    ui_file = "/home/kim/다운로드/qt/kit_menu_ui.ui"
+    ui_file = "./src/serving_robot/resource/ui/kit_menu_ui.ui"
     dialog = QtWidgets.QDialog()
     uic.loadUi(ui_file, dialog)
 

@@ -1,0 +1,1233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1111</width>
+    <height>888</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QTableWidget::item {
+    color: rgb(255, 255, 255);
+}
+</string>
+  </property>
+  <widget class="QWidget" name="widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1151</width>
+     <height>891</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">
+background-color: rgb(31, 38, 42);  /* 배경 색상 */
+
+
+배경과 살짝 구분 가능 */
+background-color: rgb(43, 57, 69)</string>
+   </property>
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>1061</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(40, 110, 110);  /* 베이지 색 */
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>7</number>
+    </property>
+    <property name="midLineWidth">
+     <number>2</number>
+    </property>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>6</x>
+       <y>10</y>
+       <width>1051</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+    color: rgb(255, 255, 255);
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>주문 현황판</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_61">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>140</y>
+      <width>221</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(40, 100, 220);  /* 약간 짙은 파랑색 배경 */
+color: rgb(255, 255, 255);          /* 흰색 글자 */
+border: 0.5px solid rgb(25, 25, 112);  /* 매우 얇은 테두리, 배경과 거의 구별할 수 없음 */
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="label_101">
+     <property name="geometry">
+      <rect>
+       <x>-2</x>
+       <y>0</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>URW Bookman</family>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <italic>true</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>201</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>170</y>
+      <width>221</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTableWidget {
+    background-color: rgb(44, 58, 71);
+}
+</string>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
+    <property name="rowCount">
+     <number>3</number>
+    </property>
+    <property name="columnCount">
+     <number>2</number>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>60</number>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>130</number>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
+    <row/>
+    <row/>
+    <row/>
+    <column/>
+    <column/>
+    <item row="0" column="0">
+     <property name="text">
+      <string>짜장면</string>
+     </property>
+    </item>
+    <item row="1" column="0">
+     <property name="text">
+      <string>짬뽕</string>
+     </property>
+    </item>
+    <item row="2" column="0">
+     <property name="text">
+      <string>탕수육</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QFrame" name="frame_62">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>140</y>
+      <width>221</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(24,144,88)
+;  /* 약간 짙은 파랑색 배경 */
+color: rgb(255, 255, 255);          /* 흰색 글자 */
+border: 0.5px solid rgb(25, 25, 112);  /* 매우 얇은 테두리, 배경과 거의 구별할 수 없음 */
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="label_104">
+     <property name="geometry">
+      <rect>
+       <x>-2</x>
+       <y>0</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>URW Bookman</family>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <italic>true</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>202</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget_3">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>170</y>
+      <width>221</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTableWidget {
+    background-color: rgb(44, 58, 71);
+}
+</string>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
+    <property name="rowCount">
+     <number>3</number>
+    </property>
+    <property name="columnCount">
+     <number>2</number>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>60</number>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>130</number>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
+    <row/>
+    <row/>
+    <row/>
+    <column/>
+    <column/>
+    <item row="0" column="0">
+     <property name="text">
+      <string>짜장면</string>
+     </property>
+    </item>
+    <item row="1" column="0">
+     <property name="text">
+      <string>짬뽕</string>
+     </property>
+    </item>
+    <item row="2" column="0">
+     <property name="text">
+      <string>탕수육</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QFrame" name="frame_63">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>140</y>
+      <width>221</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(40, 100, 220);  /* 약간 짙은 파랑색 배경 */
+color: rgb(255, 255, 255);          /* 흰색 글자 */
+border: 0.5px solid rgb(25, 25, 112);  /* 매우 얇은 테두리, 배경과 거의 구별할 수 없음 */
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="label_105">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>URW Bookman</family>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <italic>true</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>203</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget_4">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>170</y>
+      <width>221</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTableWidget {
+    background-color: rgb(44, 58, 71);
+}
+</string>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
+    <property name="rowCount">
+     <number>3</number>
+    </property>
+    <property name="columnCount">
+     <number>2</number>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>60</number>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>130</number>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
+    <row/>
+    <row/>
+    <row/>
+    <column/>
+    <column/>
+    <item row="0" column="0">
+     <property name="text">
+      <string>짜장면</string>
+     </property>
+    </item>
+    <item row="1" column="0">
+     <property name="text">
+      <string>짬뽕</string>
+     </property>
+    </item>
+    <item row="2" column="0">
+     <property name="text">
+      <string>탕수육</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QFrame" name="frame_64">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>310</y>
+      <width>221</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(40, 100, 220);  /* 약간 짙은 파랑색 배경 */
+color: rgb(255, 255, 255);          /* 흰색 글자 */
+border: 0.5px solid rgb(25, 25, 112);  /* 매우 얇은 테두리, 배경과 거의 구별할 수 없음 */
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="label_106">
+     <property name="geometry">
+      <rect>
+       <x>-2</x>
+       <y>0</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>URW Bookman</family>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <italic>true</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>204</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget_5">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>340</y>
+      <width>221</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTableWidget {
+    background-color: rgb(44, 58, 71);
+}
+</string>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
+    <property name="rowCount">
+     <number>3</number>
+    </property>
+    <property name="columnCount">
+     <number>2</number>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>60</number>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>130</number>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
+    <row/>
+    <row/>
+    <row/>
+    <column/>
+    <column/>
+    <item row="0" column="0">
+     <property name="text">
+      <string>짜장면</string>
+     </property>
+    </item>
+    <item row="1" column="0">
+     <property name="text">
+      <string>짬뽕</string>
+     </property>
+    </item>
+    <item row="2" column="0">
+     <property name="text">
+      <string>탕수육</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QFrame" name="frame_65">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>310</y>
+      <width>221</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(24,144,88);  /* 약간 짙은 파랑색 배경 */
+color: rgb(255, 255, 255);          /* 흰색 글자 */
+border: 0.5px solid rgb(25, 25, 112);  /* 매우 얇은 테두리, 배경과 거의 구별할 수 없음 */
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="label_107">
+     <property name="geometry">
+      <rect>
+       <x>-2</x>
+       <y>0</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>URW Bookman</family>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <italic>true</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>205</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget_6">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>340</y>
+      <width>221</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTableWidget {
+    background-color: rgb(44, 58, 71);
+}
+</string>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
+    <property name="rowCount">
+     <number>3</number>
+    </property>
+    <property name="columnCount">
+     <number>2</number>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>60</number>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>130</number>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
+    <row/>
+    <row/>
+    <row/>
+    <column/>
+    <column/>
+    <item row="0" column="0">
+     <property name="text">
+      <string>짜장면</string>
+     </property>
+    </item>
+    <item row="1" column="0">
+     <property name="text">
+      <string>짬뽕</string>
+     </property>
+    </item>
+    <item row="2" column="0">
+     <property name="text">
+      <string>탕수육</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QFrame" name="frame_66">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>300</y>
+      <width>221</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(40, 100, 220);  /* 약간 짙은 파랑색 배경 */
+color: rgb(255, 255, 255);          /* 흰색 글자 */
+border: 0.5px solid rgb(25, 25, 112);  /* 매우 얇은 테두리, 배경과 거의 구별할 수 없음 */
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="label_109">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>URW Bookman</family>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <italic>true</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>206</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget_7">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>330</y>
+      <width>221</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTableWidget {
+    background-color: rgb(44, 58, 71);
+}
+</string>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
+    <property name="rowCount">
+     <number>3</number>
+    </property>
+    <property name="columnCount">
+     <number>2</number>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>60</number>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>130</number>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
+    <row/>
+    <row/>
+    <row/>
+    <column/>
+    <column/>
+    <item row="0" column="0">
+     <property name="text">
+      <string>짜장면</string>
+     </property>
+    </item>
+    <item row="1" column="0">
+     <property name="text">
+      <string>짬뽕</string>
+     </property>
+    </item>
+    <item row="2" column="0">
+     <property name="text">
+      <string>탕수육</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QFrame" name="frame_67">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>480</y>
+      <width>221</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(40, 100, 220);  /* 약간 짙은 파랑색 배경 */
+color: rgb(255, 255, 255);          /* 흰색 글자 */
+border: 0.5px solid rgb(25, 25, 112);  /* 매우 얇은 테두리, 배경과 거의 구별할 수 없음 */
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="label_110">
+     <property name="geometry">
+      <rect>
+       <x>-2</x>
+       <y>0</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>URW Bookman</family>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <italic>true</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>207</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget_8">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>510</y>
+      <width>221</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTableWidget {
+    background-color: rgb(44, 58, 71);
+}
+</string>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
+    <property name="rowCount">
+     <number>3</number>
+    </property>
+    <property name="columnCount">
+     <number>2</number>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>60</number>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>130</number>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
+    <row/>
+    <row/>
+    <row/>
+    <column/>
+    <column/>
+    <item row="0" column="0">
+     <property name="text">
+      <string>짜장면</string>
+     </property>
+    </item>
+    <item row="1" column="0">
+     <property name="text">
+      <string>짬뽕</string>
+     </property>
+    </item>
+    <item row="2" column="0">
+     <property name="text">
+      <string>탕수육</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QFrame" name="frame_68">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>480</y>
+      <width>221</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(24, 144, 88
+);  /* 약간 짙은 파랑색 배경 */
+color: rgb(255, 255, 255);          /* 흰색 글자 */
+border: 0.5px solid rgb(25, 25, 112);  /* 매우 얇은 테두리, 배경과 거의 구별할 수 없음 */
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="label_111">
+     <property name="geometry">
+      <rect>
+       <x>-2</x>
+       <y>0</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>URW Bookman</family>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <italic>true</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>208</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget_9">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>510</y>
+      <width>221</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTableWidget {
+    background-color: rgb(44, 58, 71);
+}
+</string>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
+    <property name="rowCount">
+     <number>3</number>
+    </property>
+    <property name="columnCount">
+     <number>2</number>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>60</number>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>130</number>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
+    <row/>
+    <row/>
+    <row/>
+    <column/>
+    <column/>
+    <item row="0" column="0">
+     <property name="text">
+      <string>짜장면</string>
+     </property>
+    </item>
+    <item row="1" column="0">
+     <property name="text">
+      <string>짬뽕</string>
+     </property>
+    </item>
+    <item row="2" column="0">
+     <property name="text">
+      <string>탕수육</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QFrame" name="frame_69">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>480</y>
+      <width>221</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(40, 100, 220);  /* 약간 짙은 파랑색 배경 */
+color: rgb(255, 255, 255);          /* 흰색 글자 */
+border: 0.5px solid rgb(25, 25, 112);  /* 매우 얇은 테두리, 배경과 거의 구별할 수 없음 */
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="label_112">
+     <property name="geometry">
+      <rect>
+       <x>-2</x>
+       <y>0</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>URW Bookman</family>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <italic>true</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>209</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget_10">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>510</y>
+      <width>221</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTableWidget {
+    background-color: rgb(44, 58, 71);
+}
+</string>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
+    <property name="rowCount">
+     <number>3</number>
+    </property>
+    <property name="columnCount">
+     <number>2</number>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>60</number>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>130</number>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
+    <row/>
+    <row/>
+    <row/>
+    <column/>
+    <column/>
+    <item row="0" column="0">
+     <property name="text">
+      <string>짜장면</string>
+     </property>
+    </item>
+    <item row="1" column="0">
+     <property name="text">
+      <string>짬뽕</string>
+     </property>
+    </item>
+    <item row="2" column="0">
+     <property name="text">
+      <string>탕수육</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>730</y>
+      <width>201</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    background-color: rgb(204, 0, 0);
+    color: white;
+}
+
+</string>
+    </property>
+    <property name="text">
+     <string>전원 off</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>730</y>
+      <width>201</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    background-color: rgb(0, 204
+, 0);
+    color: white;
+}
+
+</string>
+    </property>
+    <property name="text">
+     <string>전원 on</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>730</y>
+      <width>201</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    background-color: rgb(0, 0, 204
+);
+    color: white;
+}
+
+</string>
+    </property>
+    <property name="text">
+     <string>조리완료 / 로봇 서빙 준비</string>
+    </property>
+   </widget>
+   <widget class="QFrame" name="frame_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>670</y>
+      <width>1071</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(40, 110, 110);  /* 베이지 색 */
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>7</number>
+    </property>
+    <property name="midLineWidth">
+     <number>2</number>
+    </property>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>6</x>
+       <y>10</y>
+       <width>1051</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+    color: rgb(255, 255, 255);
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>로봇 제어 버튼</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="pushButton_7">
+    <property name="geometry">
+     <rect>
+      <x>980</x>
+      <y>20</y>
+      <width>101</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    background-color: rgb(204, 0, 0);
+    color: white;
+}
+
+</string>
+    </property>
+    <property name="text">
+     <string>전원 off</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
