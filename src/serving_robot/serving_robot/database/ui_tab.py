@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from datetime import datetime, timedelta
 from PyQt5.QtGui import QFont
+import os
+sys.path.append('./src/serving_robot')
 from serving_robot.database import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
 
 plt.rcParams['axes.unicode_minus'] =False
@@ -256,7 +258,7 @@ class MainWindow(QDialog):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Main Window')
-        loadUi('/home/rokey/Documents/GitHub/ROKEY_serving_robot_A-2/src/serving_robot/resource/ui/button.ui', self)
+        loadUi('./src/serving_robot/resource/ui/button.ui', self)
 
         self.pushButton.clicked.connect(self.show_popup1)
         self.pushButton_2.clicked.connect(self.show_popup2)

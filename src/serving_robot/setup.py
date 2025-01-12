@@ -26,8 +26,8 @@ setup(
         'console_scripts': [
             'test_pub = serving_robot.test_node.publish_node_v2:main',
             'test_sub = serving_robot.test_node.subscribe_node_v2:main',
-            'serving_robot_ui = serving_robot.database.ui_tab:main',
             'kiosk_ui = serving_robot.kiosk.kiosk_ui:main',
+            'serving_robot_ui = serving_robot.database.ui_tab:main',
         ],
     },
 )
