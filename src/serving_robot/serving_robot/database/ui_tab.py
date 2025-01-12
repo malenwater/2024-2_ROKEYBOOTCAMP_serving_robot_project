@@ -10,7 +10,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from datetime import datetime, timedelta
 from PyQt5.QtGui import QFont
 import os
-sys.path.append('/home/rokey/Documents/GitHub/ROKEY_serving_robot_A-2/src/serving_robot')
+sys.path.append('./src/serving_robot')
 from serving_robot.database import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
 
 plt.rcParams['axes.unicode_minus'] =False
@@ -88,14 +88,14 @@ class PopupDialog1(QDialog):
         if db_connector.connect():
             query = """
             SELECT 
-        DATE(orders.created_date) AS order_date,
-        SUM(orders_product.quantity * products.price) AS total_sales
-            FROM orders
-            INNER JOIN orders_product ON orders.order_id = orders_product.order_id
-            INNER JOIN products ON orders_product.product_id = products.product_id
-            WHERE DATE(orders.created_date) BETWEEN DATE_SUB(CURDATE(), INTERVAL 3 DAY) AND CURDATE()
-            GROUP BY DATE(orders.created_date)
-            ORDER BY order_date ASC  -- 날짜 오름차순 정렬 추가
+                DATE(orders.created_date) AS order_date,
+                SUM(orders_product.quantity * products.price) AS total_sales
+                FROM orders
+                INNER JOIN orders_product ON orders.order_id = orders_product.order_id
+                INNER JOIN products ON orders_product.product_id = products.product_id
+                WHERE DATE(orders.created_date) BETWEEN DATE_SUB(CURDATE(), INTERVAL 3 DAY) AND CURDATE()
+                GROUP BY DATE(orders.created_date)
+                ORDER BY order_date ASC  -- 날짜 오름차순 정렬 추가
             """
 
             results = db_connector.fetch_data(query)
@@ -258,7 +258,7 @@ class MainWindow(QDialog):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Main Window')
-        loadUi('/home/rokey/Documents/GitHub/ROKEY_serving_robot_A-2/src/serving_robot/resource/ui/button.ui', self)
+        loadUi('./src/serving_robot/resource/ui/button.ui', self)
 
         self.pushButton.clicked.connect(self.show_popup1)
         self.pushButton_2.clicked.connect(self.show_popup2)

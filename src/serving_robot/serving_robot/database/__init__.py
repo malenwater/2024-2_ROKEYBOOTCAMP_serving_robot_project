@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 
 # 올바른 .env 파일 경로 설정
-env_path = '/home/rokey/Documents/GitHub/ROKEY_serving_robot_A-2/src/serving_robot/resource/.env'
+env_path = './src/serving_robot/resource/.env'
 
 print(f".env 경로 확인: {env_path}")
 
