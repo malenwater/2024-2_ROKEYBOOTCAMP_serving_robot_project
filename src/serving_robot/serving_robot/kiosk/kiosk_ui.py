@@ -33,6 +33,7 @@ class KioskDialog(QtWidgets.QDialog):
             "orders_layout" : self.findChild(QtWidgets.QFormLayout, "orders_layout"),
             "orderButton" : self.findChild(QtWidgets.QPushButton, "orderButton"),
             "total_price" : self.findChild(QtWidgets.QLabel, "total_price"),
+            "menu" : self.findChild(QtWidgets.QScrollArea, "menu")
         }
         
         for i in range(1, 19):
@@ -75,7 +76,22 @@ class KioskDialog(QtWidgets.QDialog):
         # 이 안이랑 필요하다면 바깥에 값을 수정해서 구현해주세요
         # 이를 위해서 아마 scroll 바의 값을 선언해야할 겁니다. 위 self.widgets에 넣어서 사용해주세요.
         
-        pass
+        sender = self.sender()  # 어떤 버튼이 눌렸는지 확인
+        scroll_area = self.widgets.get("menu")  # 스크롤 영역 가져오기
+        if not scroll_area:
+            print("Scroll area not found!")
+            return
+        
+        scroll_bar = scroll_area.verticalScrollBar()  # 세로 스크롤바 참조
+        
+        # 버튼에 따라 스크롤 위치 이동
+        if sender == self.widgets["foodButton"]:
+            scroll_bar.setValue(0)  # 맨 위로 이동
+        elif sender == self.widgets["sidefoodButton"]:
+            scroll_bar.setValue(scroll_bar.maximum() // 2)  # 중간으로 이동
+        elif sender == self.widgets["drinkButton"]:
+            scroll_bar.setValue(scroll_bar.maximum())  # 맨 아래로 이동
+
     # ---------------------------------------------------------------------------------------------------
     
     def change_quantity(self, menu_index, change):
