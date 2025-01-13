@@ -5,6 +5,7 @@ from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSlot
 import rclpy
 from rclpy.node import Node
 from serving_robot_interface.srv import MySrv
+from ..database import data_send
 import copy
 from ..database import ui_tab
 from ..kitchen_display.arrival_kitchen import arrival_kitchen
@@ -246,6 +247,7 @@ def handle_turnOFFButton(robot_widgets,_arrival_kitchens):
     result = _arrival_kitchens[1].send_goal_total_time(1)
     print("무슨값?")
     print(result)
+
     pass
 
 def handle_turnONButton(robot_widgets):
