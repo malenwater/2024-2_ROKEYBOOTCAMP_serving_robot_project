@@ -6,9 +6,10 @@ from rclpy.node import Node
 from serving_robot_interface.action import Arrive
 
 class arrival_kiosk(Node):
-    def __init__(self, return_robot_timeout):
+    def __init__(self, return_robot_timeout, return_robot_start):
         super().__init__('arrival_kiosk')
         self.return_robot_timeout = return_robot_timeout
+        self.return_robot_start = return_robot_start
         self.arithmetic_action_server = ActionServer(
             self,
             Arrive,
@@ -19,6 +20,7 @@ class arrival_kiosk(Node):
         
     def execute_checker(self, goal_handle):
         self.get_logger().info('Execute arrival action!')
+        self.return_robot_start.emit()
         feedback_msg = Arrive.Feedback()
         goal_time = goal_handle.request.goal_time
         feedback_msg.rmain_time = goal_time

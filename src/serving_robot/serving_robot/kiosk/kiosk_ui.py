@@ -34,6 +34,7 @@ class PayDialog(QtWidgets.QDialog):
         self.return_robot.clicked.connect(self.close)  # 버튼 클릭 시 창 닫기
         
 class KioskDialog(QtWidgets.QDialog):
+    return_robot_start = pyqtSignal()
     return_robot = pyqtSignal(bool)
     return_robot_timeout = pyqtSignal()
     def __init__(self):
@@ -101,12 +102,13 @@ class KioskDialog(QtWidgets.QDialog):
         self.node = Node('kiosk_node')
         self.publisher = self.node.create_publisher(Int32MultiArray, 'order_data', 10)
         self.return_robot_timeout.connect(self.shutdown_arrive_ui)
-        self.arrival_kiosk = arrival_kiosk(self.return_robot_timeout)
+        self.return_robot_start.connect(self.arrive_robot)
+        self.arrival_kiosk = arrival_kiosk(self.return_robot_timeout, 
+                                           self.return_robot_start)
         self.return_robot.connect(self.arrival_kiosk.return_robot_signal)
         ros_arrive_thread = threading.Thread(target=lambda : rclpy.spin(self.arrival_kiosk), daemon=True)
         ros_arrive_thread.start()
         print("키오스크 준비 완료")
-        self.arrive_robot()
         
     def shutdown_arrive_ui(self):
         if self.robot_arrival_dialog is not None:
