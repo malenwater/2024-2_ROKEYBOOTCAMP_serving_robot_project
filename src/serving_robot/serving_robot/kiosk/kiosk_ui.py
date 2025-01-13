@@ -1,6 +1,7 @@
 import sys
 from PyQt5 import QtWidgets, uic
-#from playsound import playsound
+from playsound import playsound
+import threading
 
 class RobotArrivalDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -11,9 +12,27 @@ class RobotArrivalDialog(QtWidgets.QDialog):
             uic.loadUi(ui_file, self)
         except FileNotFoundError:
             print("UI file not found!")
+        
+        # 알람음(mp3 파일) 경로
+        self.alarm_sound_path = "/home/gh/Desktop/ROKEY_serving_robot_A-2/src/serving_robot/resource/sound/알람음.mp3"
+        # 알람음 (비동기) 재생
+        self.play_alarm_sound()
+
         # 버튼 연결
         self.return_robot = self.findChild(QtWidgets.QPushButton, "return_robot")
         self.return_robot.clicked.connect(self.close)  # 버튼 클릭 시 창 닫기
+    
+    # 알람 재생 함수
+    def play_alarm_sound(self):
+        def play_sound():
+            print("j")
+            try:
+                playsound(self.alarm_sound_path)
+            except Exception as e:
+                print(f"Error playing sound: {e}")
+
+        # 비동기로 알람 실행
+        threading.Thread(target=play_sound, daemon=True).start()
         
 class PayDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -172,6 +191,7 @@ class KioskDialog(QtWidgets.QDialog):
         # UI 초기화
         self.reset_order()
         self.pay_orders()
+        
         # 결제 처리 관련 로직 추가 가능
         # self.alarm_arrive_robot_sound()
     # -------------------------------------------------------------------------------
@@ -181,7 +201,13 @@ class KioskDialog(QtWidgets.QDialog):
             음식 도착 알람을 울리는 함수
             :param file_path: 알람음 파일 경로
             """
+            robot_arrival_dialog = RobotArrivalDialog(self)
+            robot_arrival_dialog.exec_()
+
     def pay_orders(self):
+        robot_arrival_dialog = RobotArrivalDialog(self)
+        robot_arrival_dialog.exec_()
+
         pay_dialog = PayDialog(self)
         pay_dialog.exec_()  # 모달 창 띄우기
     def arrive_robot(self):
