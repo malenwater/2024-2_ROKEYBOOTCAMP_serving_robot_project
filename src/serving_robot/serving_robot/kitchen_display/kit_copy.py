@@ -53,10 +53,12 @@ class UIUpdater(QtCore.QObject):
     reset_signal = QtCore.pyqtSignal() # 리셋 시그널 추가
     go_table_by_path = QtCore.pyqtSignal() 
     check_arrive_robot_signal = QtCore.pyqtSignal() 
-    def __init__(self, tables, node):
+    check_goal_total_time_signal = QtCore.pyqtSignal() 
+    def __init__(self, tables, node,_arrival_kitchens):
         super().__init__()
         self.tables = tables
         self.node = node  # MyNode 인스턴스를 저장
+        self._arrival_kitchens = _arrival_kitchens
         self.thread_pool = QThreadPool()  # 스레드 풀 생성
         self.table_orders_data = {1 :[], 2 :[], 3 :[],
                                   4 :[], 5 :[], 6 :[],
@@ -64,7 +66,9 @@ class UIUpdater(QtCore.QObject):
         self.road_table_go = []
         self.road_table_go_data_save = {}
         self.check_arrive_robot = False
+        self.check_goal_total_time = False
         self.check_arrive_robot_signal.connect(self.change_staus)
+        self.check_goal_total_time_signal.connect(self.change_staus_kiosk)
     def reset_orders(self):
         print("hihiihihihi11")
         for table_number in self.table_orders_data:
@@ -85,7 +89,8 @@ class UIUpdater(QtCore.QObject):
     '''
     def change_staus(self):
         self.check_arrive_robot = True
-    
+    def change_staus_kiosk(self):
+        self.check_goal_total_time = True
     def start_scheduler_thread(self):
         # scheduler_robot_go_table 함수를 별도의 스레드로 실행
         scheduler_thread = threading.Thread(target=self.scheduler_robot_go_table)
@@ -103,12 +108,25 @@ class UIUpdater(QtCore.QObject):
             self.node.send_target_number(table_number) # check_arrive_robot = 
             print("자러간다.")
             while self.check_arrive_robot != True:
-                # time.sleep(0.1)
-                time.sleep(3)
-                print(self.check_arrive_robot)
+                time.sleep(0.1)
+                # print(self.check_arrive_robot)
             print("깨어났다.. 제어 2개를 하고 값을 받을 때까지 대기한다.")
+            sound = SoundPublisher()
+            sound.send_sound_signal(table_number)
+            self._arrival_kitchens[8].send_goal_total_time(10)
+            while self.check_goal_total_time != True:
+                time.sleep(0.1)
+                # time.sleep(3)
+                # print(self.check_goal_total_time)
+            self.check_arrive_robot = False
+            self.check_goal_total_time = False
+            print("깨어났다.. 다시 반복한다.")
             
         print("하나씩 이동, 이동 완료시 값을 받는다. 키오스크에 보낸다. 2개 소리와 action, 또 값을 받아야 다음 실행을 한다. 이를 반복한다.")
+        self.node.send_target_number(10)
+        while self.check_arrive_robot != True:
+            time.sleep(0.1)
+        self.check_arrive_robot = False
         print("주방으로 이동")
         print("경로 완료")
         
@@ -302,7 +320,7 @@ def main(args=None):
     }
     
     # UIUpdater와 Node 인스턴스 생성
-    ui_updater = UIUpdater(tables, None)
+    ui_updater = UIUpdater(tables, None, None)
     ui_updater.update_signal.connect(ui_updater.update_tables)  # 시그널 연결
     ui_updater.go_table_by_path.connect(ui_updater.start_scheduler_thread)  # 시그널 연결
     ui_updater.reset_signal.connect(ui_updater.reset_orders)  # 시그널 연결
@@ -310,22 +328,9 @@ def main(args=None):
     ui_updater.node = node 
     robot_widgets["databaseButton"].clicked.connect(lambda: handle_databaseButton(dialog))
     robot_widgets["servingButton"].clicked.connect(lambda: handle_servingButton(ui_updater))
-    robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets,node))
-    robot_widgets["turnONButton"].clicked.connect(lambda: handle_turnONButton(robot_widgets,node))
-    robot_widgets["goKittchenButton"].clicked.connect(lambda: handle_goKittchenButton(node))
-    
-    
-    # # 제어 버튼 (빨강 초록 파랑)
-    # if robot_widgets["turnOFFButton"]:
-    #     robot_widgets["turnOFFButton"].clicked.connect(lambda: node.send_target_number(11))  # 11 발행
-    #     print("Turn OFF button connected to send 11.")
-    # if robot_widgets["turnONButton"]:
-    #     robot_widgets["turnONButton"].clicked.connect(lambda: node.send_target_number(12))  # 12 발행
-    #     print("Turn ON button connected to send 12.")
-    # if robot_widgets["goKittchenButton"]:
-    #     robot_widgets["goKittchenButton"].clicked.connect(lambda: node.send_target_number(10))  # 0 발행
-    #     print("Go Kitchen button connected to send 0.")
-
+    robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets,node,ui_updater))
+    robot_widgets["turnONButton"].clicked.connect(lambda: handle_turnONButton(robot_widgets,node,ui_updater))
+    robot_widgets["goKittchenButton"].clicked.connect(lambda: handle_goKittchenButton(node,ui_updater))
 
     for table in tables:
         if table is None:
@@ -348,17 +353,11 @@ def main(args=None):
         print("i",idx)
         node_name = "arrival_kitchen_" + str(idx)
         node_action_name = "arrive_robot_" + str(idx)
-        _arrival_kitchen = arrival_kitchen(node_name,node_action_name)
+        _arrival_kitchen = arrival_kitchen(node_name,node_action_name,ui_updater)
         ros_arrive_thread = threading.Thread(target=lambda : executor.add_node(_arrival_kitchen), daemon=True)
         ros_arrive_thread.start()
         _arrival_kitchens[idx] = _arrival_kitchen
-
-     # 퍼블리셔를 통해 'turn_off' 메시지 전송
-    # sound = SoundPublisher()
-    # sound.send_sound_signal()
-    
-    
-    # result = _arrival_kitchens[1].send_goal_total_time(1)
+    ui_updater._arrival_kitchens = _arrival_kitchens 
     
     robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets,_arrival_kitchens))
     # ROS2 스레드 실행
@@ -382,21 +381,33 @@ def handle_servingButton(ui_updater):
     print("hi2")
     pass
 
-def handle_turnOFFButton(robot_widgets,node):
+def handle_turnOFFButton(robot_widgets,node,ui_updater):
     print("hi3")
     robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
     node.send_target_number(11)
+    ui_updater.check_arrive_robot = False
     pass
 
-def handle_turnONButton(robot_widgets,node):
+def handle_turnONButton(robot_widgets,node,ui_updater):
     print("hi4")
     robot_widgets["robot_status"].setText(str("로봇 상태 : ON"))
     node.send_target_number(12)
+    ui_updater.check_arrive_robot = False
     pass
 
-def handle_goKittchenButton(node):
+def handle_goKittchenButton(node,ui_updater):
     print("hi5")
+    def go_kitchen(ui_updater):
+        while ui_updater.check_arrive_robot != True:
+            time.sleep(0.1)
+        ui_updater.check_arrive_robot = False
+        
     node.send_target_number(10)
+    scheduler_thread = threading.Thread(target=go_kitchen, args=(ui_updater,))
+    scheduler_thread.start()
+    print("hi5")
+
+
     pass
 
 def get_product_price(self, product_id):

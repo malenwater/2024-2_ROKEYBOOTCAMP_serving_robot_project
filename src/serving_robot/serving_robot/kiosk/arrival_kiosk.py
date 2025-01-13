@@ -6,18 +6,19 @@ from rclpy.node import Node
 from serving_robot_interface.action import Arrive
 
 class arrival_kiosk(Node):
-    def __init__(self, return_robot_timeout, return_robot_start):
-        super().__init__('arrival_kiosk')
+    def __init__(self, return_robot_timeout, return_robot_start,table_number):
+        super().__init__('arrival_kiosk_'+str(table_number))
         self.return_robot_timeout = return_robot_timeout
         self.return_robot_start = return_robot_start
+        self.table_number =table_number
         self.arithmetic_action_server = ActionServer(
             self,
             Arrive,
-            'arrive_robot_1', ### 나중에 바꿔야함
+            'arrive_robot_'+str(self.table_number), ### 나중에 바꿔야함
             self.execute_checker)
         self.flag = False
         self.get_logger().info('도착 액션 서버 준비 완료')
-        
+        print("arrival_kiosk의 테이블 번호",table_number)
     def execute_checker(self, goal_handle):
         self.get_logger().info('Execute arrival action!')
         self.return_robot_start.emit()

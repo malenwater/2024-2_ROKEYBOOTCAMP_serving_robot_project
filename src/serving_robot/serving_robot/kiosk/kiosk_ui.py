@@ -125,7 +125,7 @@ class KioskDialog(QtWidgets.QDialog):
         self.executor = MultiThreadedExecutor()
         self.node = Node('kiosk_node')
         self.publisher = self.node.create_publisher(Int32MultiArray, 'order_data', 10)
-        self.sound_sub = SoundSubscriber()
+        self.sound_sub = SoundSubscriber(self.table_number)
         self.executor.add_node(self.sound_sub)
         # self.return_robot.connect(self.arrival_kiosk.return_robot_signal)
         ros_sound_thread = threading.Thread(target=lambda : self.executor.add_node(self.sound_sub), daemon=True)
@@ -135,7 +135,8 @@ class KioskDialog(QtWidgets.QDialog):
         self.return_robot_timeout.connect(self.shutdown_arrive_ui)
         self.return_robot_start.connect(self.arrive_robot)
         self.arrival_kiosk = arrival_kiosk(self.return_robot_timeout, 
-                                           self.return_robot_start)
+                                           self.return_robot_start,
+                                           self.table_number)
         self.return_robot.connect(self.arrival_kiosk.return_robot_signal)
         ros_arrive_thread = threading.Thread(target=lambda : self.executor.add_node(self.arrival_kiosk), daemon=True)
         ros_arrive_thread.start()

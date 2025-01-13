@@ -8,9 +8,9 @@ class SoundPublisher(Node):
         super().__init__('sound_publisher')
         self.publisher_ = self.create_publisher(String, 'sound_topic', 10)
         
-    def send_sound_signal(self):
+    def send_sound_signal(self,table_number):
         msg = String()
-        msg.data = 'play_sound'  # 메시지를 통해 소리를 재생하도록 지시
+        msg.data = str(table_number)  # 메시지를 통해 소리를 재생하도록 지시
         self.publisher_.publish(msg)
         self.get_logger().info(f'Publishing: {msg.data}')
 

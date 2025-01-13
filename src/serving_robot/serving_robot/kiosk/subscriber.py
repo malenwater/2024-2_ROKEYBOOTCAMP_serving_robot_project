@@ -4,19 +4,20 @@ from std_msgs.msg import String
 from playsound import playsound  # 소리 재생을 위한 라이브러리
 
 class SoundSubscriber(Node):
-    def __init__(self):
+    def __init__(self,table_number):
         super().__init__('sound_subscriber')
         self.subscription = self.create_subscription(
             String,
             'sound_topic',
             self.listener_callback,
             10)
+        self.table_number = str(table_number)
         self.subscription
         self.get_logger().info('SoundSubscriber 준비완료')
-
+        print("sound의 테이블 번호",table_number)
     def listener_callback(self, msg):
         self.get_logger().info(f'Received: {msg.data}')
-        if msg.data == 'play_sound':
+        if msg.data == self.table_number:
             self.play_sound()
 
     def play_sound(self):
