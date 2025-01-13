@@ -5,7 +5,9 @@ import threading
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Int32MultiArray
-
+import threading
+from .arrival_kiosk import arrival_kiosk
+from PyQt5.QtCore import pyqtSignal
 #from playsound import playsound
 class RobotArrivalDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -52,10 +54,15 @@ class PayDialog(QtWidgets.QDialog):
         self.return_robot.clicked.connect(self.close)  # 버튼 클릭 시 창 닫기
         
 class KioskDialog(QtWidgets.QDialog):
+    return_robot_start = pyqtSignal()
+    return_robot = pyqtSignal(bool)
+    return_robot_timeout = pyqtSignal()
     def __init__(self):
         super().__init__()
         # ui 파일 로드
         ui_file = "./src/serving_robot/resource/ui/kiosk.ui"
+        self.robot_arrival_dialog = None  # 초기화
+        self.return_robot_flag = True
         uic.loadUi(ui_file, self)
         self.table_number = 1
         self.menu_number = ["","짜장면","간짜장","쟁반짜장",
@@ -114,7 +121,21 @@ class KioskDialog(QtWidgets.QDialog):
         rclpy.init()
         self.node = Node('kiosk_node')
         self.publisher = self.node.create_publisher(Int32MultiArray, 'order_data', 10)
-
+        self.return_robot_timeout.connect(self.shutdown_arrive_ui)
+        self.return_robot_start.connect(self.arrive_robot)
+        self.arrival_kiosk = arrival_kiosk(self.return_robot_timeout, 
+                                           self.return_robot_start)
+        self.return_robot.connect(self.arrival_kiosk.return_robot_signal)
+        ros_arrive_thread = threading.Thread(target=lambda : rclpy.spin(self.arrival_kiosk), daemon=True)
+        ros_arrive_thread.start()
+        print("키오스크 준비 완료")
+        
+    def shutdown_arrive_ui(self):
+        if self.robot_arrival_dialog is not None:
+            self.robot_arrival_dialog.close()  # 모달 창 닫기
+            self.return_robot_flag = False
+        print("로봇 도착창 닫힘")
+        
     def __order_menu_widget(self,menu_name):
         self.widgets[menu_name].setVisible(True)
         self.widgets["orders_layout"].addWidget(self.widgets[menu_name])
@@ -218,12 +239,17 @@ class KioskDialog(QtWidgets.QDialog):
         헤애힐 것 :어떤 노드 신호를 받기(action), 후에 받은 후로부터 시간을 재서 보내주기, 사용자가 도착완료 버튼 누르면 result 혹은 canceld 상태보내기,
         아마 가능하다면 result가 편할 듯, 일정시간 후에는 무조건 result 보내기, 받았을 때 소리 및 UI 구현
         """
-        robot_arrival_dialog = RobotArrivalDialog(self)
-        robot_arrival_dialog.exec_()  # 모달 창 띄우기
+        self.robot_arrival_dialog = RobotArrivalDialog(self)
+        self.robot_arrival_dialog.exec_()  # 모달 창 띄우기
+        if self.return_robot_flag:
+            self.return_robot.emit(True)
+        self.return_robot_flag = True
+        self.robot_arrival_dialog = None  # 초기화
         pass
     def closeEvent(self, event):
         # 프로그램 종료 시 ROS2 노드 정리
         self.node.destroy_node()
+        self.arrival_kiosk.destroy_node()
         rclpy.shutdown()
         super().closeEvent(event)
 

@@ -8,7 +8,9 @@ from serving_robot_interface.srv import MySrv
 from ..database import data_send
 import copy
 from ..database import ui_tab
-
+from std_msgs.msg import Int32
+from ..kitchen_display.arrival_kitchen import arrival_kitchen
+from rclpy.executors import MultiThreadedExecutor
 # 테이블 업데이트 작업 클래스
 class TableUpdateTask(QRunnable):
     def __init__(self, tables, table_orders):
@@ -89,6 +91,8 @@ class MyNode(Node):
         self.tables = tables
         self.ui_updater = ui_updater
         self.srv = self.create_service(MySrv, 'order_srv', self.service_callback)
+        self.subscription = self.create_subscription(Int32, 'arrival_notification', self.notification_callback, 10) # 로봇에서 테이블 번호 구독
+        self.publisher = self.create_publisher(Int32, 'table', 10) # 부엌에서 로봇으로 테이블 번호 발행
         print("Service 'order_srv' created and waiting for requests...")
 
     def service_callback(self, request, response):
@@ -174,17 +178,32 @@ class MyNode(Node):
         response.success = True
         response.message = "Order received and processed (DB insertion done)"
         return response
+    def notification_callback(self, msg):
+        """구독자 콜백 함수: 도착 알림 메시지 수신 시 출력"""
+        table_number = msg.data
+        self.get_logger().info(f"Received arrival notification: Table {table_number}")
+    
+    # 퍼블리시 메소드 (스레드 처리 완료)
+    def send_target_number(self, number):
+        """발행 함수: 버튼 클릭 시 발행할 숫자를 ROS2 토픽으로 발행"""
+        msg = Int32()
+        msg.data = number  # 발행할 데이터 (버튼에 따라 11, 12, 0)
+        self.publisher.publish(msg)
+        self.get_logger().info(f'Published target number: {number}') 
+
 
 
 # ROS 2 스레드 클래스
 class RosThread(threading.Thread):
-    def __init__(self, node):
+    def __init__(self, node,exc):
         super().__init__()
         self.node = node
-
+        self.exc = exc
     def run(self):
         try:
-            rclpy.spin(self.node)
+            self.exc.add_node(self.node)
+            # rclpy.spin(self.node)
+            self.exc.spin()
         except KeyboardInterrupt:
             pass
         finally:
@@ -230,17 +249,29 @@ def main(args=None):
     
     robot_widgets["databaseButton"].clicked.connect(lambda: handle_databaseButton(dialog))
     robot_widgets["servingButton"].clicked.connect(lambda: handle_servingButton(ui_updater))
-    robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets))
+    # robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets))
     robot_widgets["turnONButton"].clicked.connect(lambda: handle_turnONButton(robot_widgets))
     robot_widgets["goKittchenButton"].clicked.connect(handle_goKittchenButton)
     
+    
+    # 제어 버튼 (빨강 초록 파랑)
+    if robot_widgets["turnOFFButton"]:
+        robot_widgets["turnOFFButton"].clicked.connect(lambda: node.send_target_number(11))  # 11 발행
+        print("Turn OFF button connected to send 11.")
+    if robot_widgets["turnONButton"]:
+        robot_widgets["turnONButton"].clicked.connect(lambda: node.send_target_number(12))  # 12 발행
+        print("Turn ON button connected to send 12.")
+    if robot_widgets["goKittchenButton"]:
+        robot_widgets["goKittchenButton"].clicked.connect(lambda: node.send_target_number(0))  # 0 발행
+        print("Go Kitchen button connected to send 0.")
+
+
     for table in tables:
         if table is None:
             print("Error: Table widget not found in UI file.")
         else:
             print(f"{table.objectName()} loaded successfully.")
         table.setVisible(False)
-
 
 
     # 버튼 클릭 시 테이블 초기화
@@ -250,9 +281,20 @@ def main(args=None):
         print("Button 'pushButton_7' connected successfully.")
     else:
         print("Error: pushButton_7 not found in UI file.")
+    executor = MultiThreadedExecutor()
+    _arrival_kitchens ={}
+    for idx in range(1,10):
+        print("i",idx)
+        node_name = "arrival_kitchen_" + str(idx)
+        node_action_name = "arrive_robot_" + str(idx)
+        _arrival_kitchen = arrival_kitchen(node_name,node_action_name)
+        ros_arrive_thread = threading.Thread(target=lambda : executor.add_node(_arrival_kitchen), daemon=True)
+        ros_arrive_thread.start()
+        _arrival_kitchens[idx] = _arrival_kitchen
 
+    robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets,_arrival_kitchens))
     # ROS2 스레드 실행
-    ros_thread = RosThread(node)
+    ros_thread = RosThread(node,executor)
     ros_thread.start()
 
     # UI 실행
@@ -270,11 +312,20 @@ def handle_servingButton(ui_updater):
     ui_updater.reset_signal.emit()
     print("hi2")
     pass
-def handle_turnOFFButton(robot_widgets):
+# def handle_turnOFFButton(robot_widgets):
+#     print("hi3")
+#     robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
+#     pass
+
+def handle_turnOFFButton(robot_widgets,_arrival_kitchens):
     print("hi3")
     robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
-    
+    result = _arrival_kitchens[1].send_goal_total_time(1)
+    print("무슨값?")
+    print(result)
+
     pass
+
 def handle_turnONButton(robot_widgets):
     print("hi4")
     robot_widgets["robot_status"].setText(str("로봇 상태 : ON"))
