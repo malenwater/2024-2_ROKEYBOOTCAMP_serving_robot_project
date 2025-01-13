@@ -5,6 +5,7 @@ from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSlot
 import rclpy
 from rclpy.node import Node
 from serving_robot_interface.srv import MySrv
+import copy
 
 # 테이블 업데이트 작업 클래스
 class TableUpdateTask(QRunnable):
@@ -12,6 +13,12 @@ class TableUpdateTask(QRunnable):
         super().__init__()
         self.tables = tables
         self.table_orders = table_orders
+        self.menu_number = ["","짜장면","간짜장","쟁반짜장",
+                "짬뽕","짬뽕밥","짜장밥",
+                "탕수육","깐풍기","군만두",
+                "팔보채","고추잡채","꽃 빵",
+                "사이다","콜라","환타",
+                "소주","맥주","고량주",]
 
     @pyqtSlot()
     def run(self):
@@ -23,7 +30,7 @@ class TableUpdateTask(QRunnable):
                 table.setColumnCount(2)
                 table.setVisible(True)
                 for row, (menu_index, quantity) in enumerate(orders):
-                    item_menu = QtWidgets.QTableWidgetItem(str(menu_index))
+                    item_menu = QtWidgets.QTableWidgetItem(self.menu_number[menu_index])
                     item_quantity = QtWidgets.QTableWidgetItem(str(quantity))
                     item_menu.setForeground(QtGui.QColor(255, 255, 255))  # 흰색 텍스트
                     item_quantity.setForeground(QtGui.QColor(255, 255, 255))  # 흰색 텍스트
@@ -41,11 +48,34 @@ class UIUpdater(QtCore.QObject):
         super().__init__()
         self.tables = tables
         self.thread_pool = QThreadPool()  # 스레드 풀 생성
-
+        self.table_orders_data = {1 :[], 2 :[], 3 :[],
+                                  4 :[], 5 :[], 6 :[],
+                                  7 :[], 8 :[], 9 :[],}
+    def reset_orders(self):
+        for table_number in self.table_orders_data:
+            self.table_orders_data[table_number] = []
+            
+    def update_table_orders_data(self,table_orders):
+        for table_number in table_orders:
+            for count in table_orders[table_number]:
+                if len(self.table_orders_data[table_number]):
+                    flag = True
+                    for menu_order in self.table_orders_data[table_number]:
+                        if menu_order[0] == count[0]:
+                            menu_order[1] += count[1]
+                            flag = False
+                    if flag:
+                        self.table_orders_data[table_number].append(copy.deepcopy(count))
+                else:
+                    self.table_orders_data[table_number].append(copy.deepcopy(count))
+                
     @QtCore.pyqtSlot(dict)
     def update_tables(self, table_orders):
         # 스레드 풀에서 비동기 작업 실행
-        task = TableUpdateTask(self.tables, table_orders)
+        self.update_table_orders_data(table_orders)
+        print("aaa",table_orders)
+        print("bbb",self.table_orders_data)
+        task = TableUpdateTask(self.tables, self.table_orders_data)
         self.thread_pool.start(task)
 
 # ROS 2 노드 클래스
@@ -74,7 +104,7 @@ class MyNode(Node):
                 quantity = data[i + 2]
                 if table_index not in table_orders:
                     table_orders[table_index] = []
-                table_orders[table_index].append((menu_index, quantity))
+                table_orders[table_index].append([menu_index, quantity])
                 print(f"Parsed order -> Table: {table_index}, Menu: {menu_index}, Quantity: {quantity}")
             except IndexError:
                 print("Malformed data received")
