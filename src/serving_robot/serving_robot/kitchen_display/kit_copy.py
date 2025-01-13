@@ -5,7 +5,7 @@ from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSlot
 import rclpy
 from rclpy.node import Node
 from serving_robot_interface.srv import MySrv
-
+from ..database import data_send
 # 테이블 업데이트 작업 클래스
 class TableUpdateTask(QRunnable):
     def __init__(self, tables, table_orders):
