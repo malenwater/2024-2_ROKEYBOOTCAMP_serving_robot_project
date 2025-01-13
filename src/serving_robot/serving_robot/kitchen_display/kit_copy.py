@@ -12,7 +12,8 @@ from ..kiosk.publisher import SoundPublisher
 from std_msgs.msg import Int32
 from ..kitchen_display.arrival_kitchen import arrival_kitchen
 from rclpy.executors import MultiThreadedExecutor
-
+import asyncio
+import time
 # 테이블 업데이트 작업 클래스
 class TableUpdateTask(QRunnable):
     def __init__(self, tables, table_orders):
@@ -50,19 +51,26 @@ class TableUpdateTask(QRunnable):
 class UIUpdater(QtCore.QObject):
     update_signal = QtCore.pyqtSignal(dict)
     reset_signal = QtCore.pyqtSignal() # 리셋 시그널 추가
-    def __init__(self, tables):
+    go_table_by_path = QtCore.pyqtSignal() 
+    check_arrive_robot_signal = QtCore.pyqtSignal() 
+    def __init__(self, tables, node):
         super().__init__()
         self.tables = tables
+        self.node = node  # MyNode 인스턴스를 저장
         self.thread_pool = QThreadPool()  # 스레드 풀 생성
         self.table_orders_data = {1 :[], 2 :[], 3 :[],
                                   4 :[], 5 :[], 6 :[],
                                   7 :[], 8 :[], 9 :[],}
         self.road_table_go = []
+        self.road_table_go_data_save = {}
+        self.check_arrive_robot = False
+        self.check_arrive_robot_signal.connect(self.change_staus)
     def reset_orders(self):
         print("hihiihihihi11")
         for table_number in self.table_orders_data:
             self.table_orders_data[table_number] = []
         self.update_tables({})
+    '''
     # 해야할 것, 현재 어떤 테이블에 값이 있는가? 이를 저장하고
     # 이에 따라 이동을 한다.
     # 이동 결과가 나오면 내가 만든 함수를 호출 하고 결과 값을 리턴 받는다. playsound 또한 보낸다.
@@ -74,7 +82,35 @@ class UIUpdater(QtCore.QObject):
     # 전원 키는 키 = 그냥 동작한다. 굳이 구현 안 해도 됨                                        완료
     # 주방 돌아오는 키 = 리셋했던 정보를 복원한다? 일단 보류 리셋된 채로 돌아옴. 주방으로 돌아온다.
     # 일단 쭉 이동하는거 구현하기
+    '''
+    def change_staus(self):
+        self.check_arrive_robot = True
+    
+    def start_scheduler_thread(self):
+        # scheduler_robot_go_table 함수를 별도의 스레드로 실행
+        scheduler_thread = threading.Thread(target=self.scheduler_robot_go_table)
+        scheduler_thread.start()
+        print("경로 찾기 쓰레드 시작")
+         
     def scheduler_robot_go_table(self):
+        print("경로 시작")
+        self.road_table_go = [key for key, value in self.table_orders_data.items() if value]
+        self.road_table_go_data_save = copy.deepcopy(self.table_orders_data)
+        print(self.road_table_go)
+        print(self.road_table_go_data_save)
+        print("현재 가야하는 경로 스케줄")
+        for table_number in self.road_table_go:
+            self.node.send_target_number(table_number) # check_arrive_robot = 
+            print("자러간다.")
+            while self.check_arrive_robot != True:
+                # time.sleep(0.1)
+                time.sleep(3)
+                print(self.check_arrive_robot)
+            print("깨어났다.. 제어 2개를 하고 값을 받을 때까지 대기한다.")
+            
+        print("하나씩 이동, 이동 완료시 값을 받는다. 키오스크에 보낸다. 2개 소리와 action, 또 값을 받아야 다음 실행을 한다. 이를 반복한다.")
+        print("주방으로 이동")
+        print("경로 완료")
         
         pass
     def update_table_orders_data(self,table_orders):
@@ -97,6 +133,7 @@ class UIUpdater(QtCore.QObject):
         self.update_table_orders_data(table_orders)
         print("aaa",table_orders)
         print("bbb",self.table_orders_data)
+        print("저장확인",self.road_table_go_data_save)
         task = TableUpdateTask(self.tables, self.table_orders_data)
         self.thread_pool.start(task)
 
@@ -106,6 +143,7 @@ class MyNode(Node):
         super().__init__('kitchen_node')
         self.tables = tables
         self.ui_updater = ui_updater
+        # self.check_arrive_robot_to_table = False
         self.srv = self.create_service(MySrv, 'order_srv', self.service_callback)
         self.subscription = self.create_subscription(Int32, 'arrival_notification', self.notification_callback, 10) # 로봇에서 테이블 번호 구독
         self.publisher = self.create_publisher(Int32, 'table', 10) # 부엌에서 로봇으로 테이블 번호 발행
@@ -198,6 +236,10 @@ class MyNode(Node):
         """구독자 콜백 함수: 도착 알림 메시지 수신 시 출력"""
         table_number = msg.data
         self.get_logger().info(f"Received arrival notification: Table {table_number}")
+        self.ui_updater.check_arrive_robot_signal.emit()
+        print("신호를 보내긴 보냄")
+        # self.check_arrive_robot_to_table = True
+        # print("도착했다.",self.check_arrive_robot_to_table)
     
     # 퍼블리시 메소드 (스레드 처리 완료)
     def send_target_number(self, number):
@@ -206,6 +248,8 @@ class MyNode(Node):
         msg.data = number  # 발행할 데이터 (버튼에 따라 11, 12, 0)
         self.publisher.publish(msg)
         self.get_logger().info(f'Published target number: {number}') 
+        # self.check_arrive_robot_to_table = False
+        # return self.check_arrive_robot_to_table
 
 
 
@@ -258,11 +302,12 @@ def main(args=None):
     }
     
     # UIUpdater와 Node 인스턴스 생성
-    ui_updater = UIUpdater(tables)
+    ui_updater = UIUpdater(tables, None)
     ui_updater.update_signal.connect(ui_updater.update_tables)  # 시그널 연결
+    ui_updater.go_table_by_path.connect(ui_updater.start_scheduler_thread)  # 시그널 연결
     ui_updater.reset_signal.connect(ui_updater.reset_orders)  # 시그널 연결
     node = MyNode(tables, ui_updater)
-    
+    ui_updater.node = node 
     robot_widgets["databaseButton"].clicked.connect(lambda: handle_databaseButton(dialog))
     robot_widgets["servingButton"].clicked.connect(lambda: handle_servingButton(ui_updater))
     robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets,node))
@@ -332,6 +377,7 @@ def handle_databaseButton(dialog):
     
 def handle_servingButton(ui_updater):
     print("hi2")
+    ui_updater.go_table_by_path.emit()
     ui_updater.reset_signal.emit()
     print("hi2")
     pass

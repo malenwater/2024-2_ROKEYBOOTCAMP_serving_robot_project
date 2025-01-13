@@ -13,6 +13,7 @@ class arrival_kitchen(Node):
           node_action_name)
         self.goal_time = 10
         self.get_logger().info('도착 액션 클라이언트 준비 완료')
+        self.result_future = None
         
     def send_goal_total_time(self, table_number):
         print("여기")
@@ -25,12 +26,13 @@ class arrival_kitchen(Node):
             goal_msg,
             feedback_callback=self.get_arrive_action_feedback)
         self.send_goal_future.add_done_callback(self.get_arrive_action_goal)
-        return True
+        return self.result_future
 
     def get_arrive_action_goal(self, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
             self.get_logger().warning('Action goal rejected.')
+            self.result_future.set_result(False)
             return
         self.get_logger().info('Action goal accepted.')
         self.action_result_future = goal_handle.get_result_async()
@@ -47,10 +49,12 @@ class arrival_kitchen(Node):
             self.get_logger().info('Action succeeded!')
             self.get_logger().info(
                 'Action result(success): {0}'.format(action_result.success))
+            self.result_future.set_result(True)
         else:
             self.get_logger().warning(
                 'Action failed with status: {0}'.format(action_status))
-
+            self.result_future.set_result(False)
+            
 def main(args=None):
     rclpy.init()
     table_number = 1
