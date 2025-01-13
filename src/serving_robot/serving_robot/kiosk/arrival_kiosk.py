@@ -13,7 +13,7 @@ class arrival_kiosk(Node):
         self.arithmetic_action_server = ActionServer(
             self,
             Arrive,
-            'arrive_robot',
+            'arrive_robot_1', ### 나중에 바꿔야함
             self.execute_checker)
         self.flag = False
         self.get_logger().info('도착 액션 서버 준비 완료')

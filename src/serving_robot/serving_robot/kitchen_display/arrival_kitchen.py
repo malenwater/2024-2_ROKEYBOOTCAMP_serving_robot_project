@@ -5,18 +5,19 @@ import rclpy
 from action_msgs.msg import GoalStatus
 
 class arrival_kitchen(Node):
-    def __init__(self):
-        super().__init__('arrival_kitchen')
+    def __init__(self,node_name,node_action_name):
+        super().__init__(node_name)
         self.arrive_action_client = ActionClient(
           self,
           Arrive,
-          'arrive_robot')
+          node_action_name)
         self.goal_time = 10
-        while not self.arrive_action_client.wait_for_server(timeout_sec=0.1):
-            self.get_logger().log('서버 기다리는 중')
         self.get_logger().info('도착 액션 클라이언트 준비 완료')
         
     def send_goal_total_time(self, table_number):
+        print("여기")
+        while not self.arrive_action_client.wait_for_server(timeout_sec=0.1):
+            self.get_logger().info('서버 기다리는 중')
         goal_msg = Arrive.Goal()
         goal_msg.goal_time = (float)(self.goal_time)
         goal_msg.table_number = (int)(table_number)
