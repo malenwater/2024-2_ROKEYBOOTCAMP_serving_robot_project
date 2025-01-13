@@ -7,6 +7,7 @@ from rclpy.node import Node
 from serving_robot_interface.srv import MySrv
 import copy
 from ..database import ui_tab
+from std_msgs.msg import Int32
 
 # 테이블 업데이트 작업 클래스
 class TableUpdateTask(QRunnable):
@@ -86,6 +87,8 @@ class MyNode(Node):
         self.tables = tables
         self.ui_updater = ui_updater
         self.srv = self.create_service(MySrv, 'order_srv', self.service_callback)
+        self.subscription = self.create_subscription(Int32, 'arrival_notification', self.notification_callback, 10) # 로봇에서 테이블 번호 구독
+        self.publisher = self.create_publisher(Int32, 'table', 10) # 부엌에서 로봇으로 테이블 번호 발행
         print("Service 'order_srv' created and waiting for requests...")
 
     def service_callback(self, request, response):
@@ -119,6 +122,19 @@ class MyNode(Node):
         response.success = True
         response.message = "Order received and processed"
         return response
+    def notification_callback(self, msg):
+        """구독자 콜백 함수: 도착 알림 메시지 수신 시 출력"""
+        table_number = msg.data
+        self.get_logger().info(f"Received arrival notification: Table {table_number}")
+    
+    # 퍼블리시 메소드 (스레드 처리 완료)
+    def send_target_number(self, number):
+        """발행 함수: 버튼 클릭 시 발행할 숫자를 ROS2 토픽으로 발행"""
+        msg = Int32()
+        msg.data = number  # 발행할 데이터 (버튼에 따라 11, 12, 0)
+        self.publisher.publish(msg)
+        self.get_logger().info(f'Published target number: {number}') 
+
 
     def clear_tables(self):
         for table in self.tables:
@@ -177,6 +193,19 @@ def main(args=None):
     robot_widgets["turnONButton"].clicked.connect(handle_turnONButton)
     robot_widgets["goKittchenButton"].clicked.connect(handle_goKittchenButton)
     
+    
+    # 제어 버튼 (빨강 초록 파랑)
+    if robot_widgets["turnOFFButton"]:
+        robot_widgets["turnOFFButton"].clicked.connect(lambda: node.send_target_number(11))  # 11 발행
+        print("Turn OFF button connected to send 11.")
+    if robot_widgets["turnONButton"]:
+        robot_widgets["turnONButton"].clicked.connect(lambda: node.send_target_number(12))  # 12 발행
+        print("Turn ON button connected to send 12.")
+    if robot_widgets["goKittchenButton"]:
+        robot_widgets["goKittchenButton"].clicked.connect(lambda: node.send_target_number(0))  # 0 발행
+        print("Go Kitchen button connected to send 0.")
+
+
     for table in tables:
         if table is None:
             print("Error: Table widget not found in UI file.")
