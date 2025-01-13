@@ -91,6 +91,48 @@ background-color: rgb(43, 57, 69)</string>
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
+    <widget class="QPushButton" name="servingButton">
+     <property name="geometry">
+      <rect>
+       <x>930</x>
+       <y>0</y>
+       <width>131</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    background-color: rgb(0, 150, 150);
+    color: white;
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>로봇 서빙 보내기</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="databaseButton">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>131</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    background-color: rgb(0, 150, 150);
+    color: white;
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>오늘 매출</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QFrame" name="frame_61">
     <property name="geometry">
@@ -1084,7 +1126,7 @@ border: 0.5px solid rgb(25, 25, 112);  /* 매우 얇은 테두리, 배경과 거
      </property>
     </item>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="turnOFFButton">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -1105,7 +1147,7 @@ border: 0.5px solid rgb(25, 25, 112);  /* 매우 얇은 테두리, 배경과 거
      <string>전원 off</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="turnONButton">
     <property name="geometry">
      <rect>
       <x>460</x>
@@ -1127,7 +1169,7 @@ border: 0.5px solid rgb(25, 25, 112);  /* 매우 얇은 테두리, 배경과 거
      <string>전원 on</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_3">
+   <widget class="QPushButton" name="goKittchenButton">
     <property name="geometry">
      <rect>
       <x>870</x>
@@ -1146,7 +1188,7 @@ border: 0.5px solid rgb(25, 25, 112);  /* 매우 얇은 테두리, 배경과 거
 </string>
     </property>
     <property name="text">
-     <string>조리완료 / 로봇 서빙 준비</string>
+     <string>주방 대기 위치</string>
     </property>
    </widget>
    <widget class="QFrame" name="frame_2">
@@ -1204,27 +1246,26 @@ border: 0.5px solid rgb(25, 25, 112);  /* 매우 얇은 테두리, 배경과 거
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
-   </widget>
-   <widget class="QPushButton" name="pushButton_7">
-    <property name="geometry">
-     <rect>
-      <x>980</x>
-      <y>20</y>
-      <width>101</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton {
-    background-color: rgb(204, 0, 0);
+    <widget class="QLabel" name="robot_status">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+    background-color: rgb(0, 150, 150);
     color: white;
 }
-
 </string>
-    </property>
-    <property name="text">
-     <string>전원 off</string>
-    </property>
+     </property>
+     <property name="text">
+      <string>로봇 상태 : ON</string>
+     </property>
+    </widget>
    </widget>
   </widget>
  </widget>

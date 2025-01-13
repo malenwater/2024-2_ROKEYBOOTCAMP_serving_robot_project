@@ -3,7 +3,5 @@ log/
 build/
 .vscode/
 __pycache__
-
 *.tar
 .env
-sound/

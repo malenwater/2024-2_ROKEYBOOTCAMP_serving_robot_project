@@ -6,6 +6,7 @@ import rclpy
 from rclpy.node import Node
 from serving_robot_interface.srv import MySrv
 import copy
+# from ..database import ui_tab
 
 # 테이블 업데이트 작업 클래스
 class TableUpdateTask(QRunnable):
@@ -162,7 +163,20 @@ def main(args=None):
         dialog.findChild(QtWidgets.QTableWidget, 'tableWidget_9'),
         dialog.findChild(QtWidgets.QTableWidget, 'tableWidget_10'),
     ]
-
+    robot_widgets = {
+        "databaseButton" : dialog.findChild(QtWidgets.QPushButton, "databaseButton"),
+        "servingButton" : dialog.findChild(QtWidgets.QPushButton, "servingButton"),
+        "turnOFFButton" : dialog.findChild(QtWidgets.QPushButton, "turnOFFButton"),
+        "turnONButton" : dialog.findChild(QtWidgets.QPushButton, "turnONButton"),
+        "goKittchenButton" : dialog.findChild(QtWidgets.QPushButton, "goKittchenButton"),
+        "robot_status" : dialog.findChild(QtWidgets.QLabel, "robot_status"),
+    }
+    robot_widgets["databaseButton"].clicked.connect(lambda: handle_databaseButton(dialog))
+    robot_widgets["servingButton"].clicked.connect(handle_servingButton)
+    robot_widgets["turnOFFButton"].clicked.connect(handle_turnOFFButton)
+    robot_widgets["turnONButton"].clicked.connect(handle_turnONButton)
+    robot_widgets["goKittchenButton"].clicked.connect(handle_goKittchenButton)
+    
     for table in tables:
         if table is None:
             print("Error: Table widget not found in UI file.")
@@ -192,6 +206,24 @@ def main(args=None):
 
     # UI 종료 시 ROS2 스레드 정리
     ros_thread.join()
-
+    
+def handle_databaseButton(dialog):
+    print("hi1")
+    # node = ui_tab.MainWindow()
+    # node.exec_()
+    pass
+    
+def handle_servingButton():
+    print("hi2")
+    pass
+def handle_turnOFFButton():
+    print("hi3")
+    pass
+def handle_turnONButton():
+    print("hi4")
+    pass
+def handle_goKittchenButton():
+    print("hi5")
+    pass
 if __name__ == '__main__':
     main()
