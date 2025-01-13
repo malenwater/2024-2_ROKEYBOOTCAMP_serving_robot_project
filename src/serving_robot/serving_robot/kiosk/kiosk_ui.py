@@ -3,12 +3,10 @@ from PyQt5 import QtWidgets, uic
 #from playsound import playsound
 
 class RobotArrivalDialog(QtWidgets.QDialog):
-    def __init__(self,parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
         # 새로운 UI 파일 로드
         ui_file = "./src/serving_robot/resource/ui/kiosk_arrival.ui"
-        uic.loadUi(ui_file, self)
-
         try:
             uic.loadUi(ui_file, self)
         except FileNotFoundError:
@@ -16,7 +14,20 @@ class RobotArrivalDialog(QtWidgets.QDialog):
         # 버튼 연결
         self.return_robot = self.findChild(QtWidgets.QPushButton, "return_robot")
         self.return_robot.clicked.connect(self.close)  # 버튼 클릭 시 창 닫기
-        print("hi")
+        
+class PayDialog(QtWidgets.QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # 새로운 UI 파일 로드
+        ui_file = "./src/serving_robot/resource/ui/kiosk_pay.ui"
+        try:
+            uic.loadUi(ui_file, self)
+        except FileNotFoundError:
+            print("UI file not found!")
+        # 버튼 연결
+        self.return_robot = self.findChild(QtWidgets.QPushButton, "return_to_menu")
+        self.return_robot.clicked.connect(self.close)  # 버튼 클릭 시 창 닫기
+                
 class KioskDialog(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
@@ -160,11 +171,9 @@ class KioskDialog(QtWidgets.QDialog):
         #해야할 것 : 왼쪽 주문리스트 사라지게 하기, 결제 완료 창 뜨게 하기
         # UI 초기화
         self.reset_order()
-        self.arrive_robot()
-        robot_arrival_dialog = RobotArrivalDialog(self)
-        robot_arrival_dialog.exec_()  # 모달 창 띄우기
+        self.pay_orders()
         # 결제 처리 관련 로직 추가 가능
-        self.alarm_arrive_robot_sound()
+        # self.alarm_arrive_robot_sound()
     # -------------------------------------------------------------------------------
     
     def alarm_arrive_robot_sound(self):
@@ -172,13 +181,16 @@ class KioskDialog(QtWidgets.QDialog):
             음식 도착 알람을 울리는 함수
             :param file_path: 알람음 파일 경로
             """
+    def pay_orders(self):
+        pay_dialog = PayDialog(self)
+        pay_dialog.exec_()  # 모달 창 띄우기
     def arrive_robot(self):
         """
         헤애힐 것 :어떤 노드 신호를 받기(action), 후에 받은 후로부터 시간을 재서 보내주기, 사용자가 도착완료 버튼 누르면 result 혹은 canceld 상태보내기,
         아마 가능하다면 result가 편할 듯, 일정시간 후에는 무조건 result 보내기, 받았을 때 소리 및 UI 구현
         """
-        # robot_arrival_dialog = RobotArrivalDialog(self)
-        # robot_arrival_dialog.exec_()  # 모달 창 띄우기
+        robot_arrival_dialog = RobotArrivalDialog(self)
+        robot_arrival_dialog.exec_()  # 모달 창 띄우기
     
 def main(args=None):
     app = QtWidgets.QApplication(sys.argv)
