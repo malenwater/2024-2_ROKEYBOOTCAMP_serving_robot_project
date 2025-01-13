@@ -3,7 +3,9 @@ from PyQt5 import QtWidgets, uic
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Int32MultiArray
-
+import threading
+from .arrival_kiosk import arrival_kiosk
+from PyQt5.QtCore import pyqtSignal
 #from playsound import playsound
 class RobotArrivalDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -32,6 +34,7 @@ class PayDialog(QtWidgets.QDialog):
         self.return_robot.clicked.connect(self.close)  # 버튼 클릭 시 창 닫기
         
 class KioskDialog(QtWidgets.QDialog):
+    return_robot = pyqtSignal()
     def __init__(self):
         super().__init__()
         # ui 파일 로드
@@ -94,7 +97,11 @@ class KioskDialog(QtWidgets.QDialog):
         rclpy.init()
         self.node = Node('kiosk_node')
         self.publisher = self.node.create_publisher(Int32MultiArray, 'order_data', 10)
-
+        self.arrival_kiosk = arrival_kiosk()
+        self.return_robot.connect(self.arrival_kiosk.return_robot_signal)
+        ros_arrive_thread = threading.Thread(target=lambda : rclpy.spin(self.arrival_kiosk), daemon=True)
+        ros_arrive_thread.start()
+        print("키오스크 준비 완료")
     def __order_menu_widget(self,menu_name):
         self.widgets[menu_name].setVisible(True)
         self.widgets["orders_layout"].addWidget(self.widgets[menu_name])
@@ -193,10 +200,12 @@ class KioskDialog(QtWidgets.QDialog):
         """
         robot_arrival_dialog = RobotArrivalDialog(self)
         robot_arrival_dialog.exec_()  # 모달 창 띄우기
+        self.return_robot.emit()
         pass
     def closeEvent(self, event):
         # 프로그램 종료 시 ROS2 노드 정리
         self.node.destroy_node()
+        self.arrival_kiosk.destroy_node()
         rclpy.shutdown()
         super().closeEvent(event)
 

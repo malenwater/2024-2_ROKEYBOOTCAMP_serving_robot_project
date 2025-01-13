@@ -13,6 +13,7 @@ class arrival_kiosk(Node):
             Arrive,
             'arrive_robot',
             self.execute_checker)
+        self.flag = False
         self.get_logger().info('도착 액션 서버 준비 완료')
         
     def execute_checker(self, goal_handle):
@@ -26,12 +27,17 @@ class arrival_kiosk(Node):
             feedback_msg.rmain_time = goal_time - cur_time
             self.get_logger().info('Feedback: {0}'.format(feedback_msg.rmain_time))
             goal_handle.publish_feedback(feedback_msg)
+            if self.flag:
+                break
             time.sleep(0.1)
         goal_handle.succeed()
         result = Arrive.Result()
         result.success = True
+        self.flag = False
         return result
     
+    def return_robot_signal(self):
+        self.flag = True
 def main(args=None):
     rclpy.init()
     try:
