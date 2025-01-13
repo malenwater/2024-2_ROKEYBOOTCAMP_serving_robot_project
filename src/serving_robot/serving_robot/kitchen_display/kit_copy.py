@@ -6,7 +6,7 @@ import rclpy
 from rclpy.node import Node
 from serving_robot_interface.srv import MySrv
 import copy
-# from ..database import ui_tab
+from ..database import ui_tab
 
 # 테이블 업데이트 작업 클래스
 class TableUpdateTask(QRunnable):
@@ -209,8 +209,8 @@ def main(args=None):
     
 def handle_databaseButton(dialog):
     print("hi1")
-    # node = ui_tab.MainWindow()
-    # node.exec_()
+    node = ui_tab.MainWindow()
+    node.exec_()
     pass
     
 def handle_servingButton():
