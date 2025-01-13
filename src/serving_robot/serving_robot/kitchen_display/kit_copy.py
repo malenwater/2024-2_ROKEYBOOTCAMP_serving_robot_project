@@ -5,10 +5,12 @@ from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSlot
 import rclpy
 from rclpy.node import Node
 from serving_robot_interface.srv import MySrv
+from ..database import data_send
 import copy
 from ..database import ui_tab
 from std_msgs.msg import Int32
-
+from ..kitchen_display.arrival_kitchen import arrival_kitchen
+from rclpy.executors import MultiThreadedExecutor
 # 테이블 업데이트 작업 클래스
 class TableUpdateTask(QRunnable):
     def __init__(self, tables, table_orders):
@@ -45,7 +47,7 @@ class TableUpdateTask(QRunnable):
 # UI 업데이트 클래스
 class UIUpdater(QtCore.QObject):
     update_signal = QtCore.pyqtSignal(dict)
-
+    reset_signal = QtCore.pyqtSignal() # 리셋 시그널 추가
     def __init__(self, tables):
         super().__init__()
         self.tables = tables
@@ -54,9 +56,11 @@ class UIUpdater(QtCore.QObject):
                                   4 :[], 5 :[], 6 :[],
                                   7 :[], 8 :[], 9 :[],}
     def reset_orders(self):
+        print("hihiihihihi11")
         for table_number in self.table_orders_data:
             self.table_orders_data[table_number] = []
-            
+        self.update_tables({})
+        
     def update_table_orders_data(self,table_orders):
         for table_number in table_orders:
             for count in table_orders[table_number]:
@@ -144,13 +148,15 @@ class MyNode(Node):
 
 # ROS 2 스레드 클래스
 class RosThread(threading.Thread):
-    def __init__(self, node):
+    def __init__(self, node,exc):
         super().__init__()
         self.node = node
-
+        self.exc = exc
     def run(self):
         try:
-            rclpy.spin(self.node)
+            self.exc.add_node(self.node)
+            # rclpy.spin(self.node)
+            self.exc.spin()
         except KeyboardInterrupt:
             pass
         finally:
@@ -187,10 +193,17 @@ def main(args=None):
         "goKittchenButton" : dialog.findChild(QtWidgets.QPushButton, "goKittchenButton"),
         "robot_status" : dialog.findChild(QtWidgets.QLabel, "robot_status"),
     }
+    
+    # UIUpdater와 Node 인스턴스 생성
+    ui_updater = UIUpdater(tables)
+    ui_updater.update_signal.connect(ui_updater.update_tables)  # 시그널 연결
+    ui_updater.reset_signal.connect(ui_updater.reset_orders)  # 시그널 연결
+    node = MyNode(tables, ui_updater)
+    
     robot_widgets["databaseButton"].clicked.connect(lambda: handle_databaseButton(dialog))
-    robot_widgets["servingButton"].clicked.connect(handle_servingButton)
-    robot_widgets["turnOFFButton"].clicked.connect(handle_turnOFFButton)
-    robot_widgets["turnONButton"].clicked.connect(handle_turnONButton)
+    robot_widgets["servingButton"].clicked.connect(lambda: handle_servingButton(ui_updater))
+    # robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets))
+    robot_widgets["turnONButton"].clicked.connect(lambda: handle_turnONButton(robot_widgets))
     robot_widgets["goKittchenButton"].clicked.connect(handle_goKittchenButton)
     
     
@@ -213,10 +226,6 @@ def main(args=None):
             print(f"{table.objectName()} loaded successfully.")
         table.setVisible(False)
 
-    # UIUpdater와 Node 인스턴스 생성
-    ui_updater = UIUpdater(tables)
-    ui_updater.update_signal.connect(ui_updater.update_tables)  # 시그널 연결
-    node = MyNode(tables, ui_updater)
 
     # 버튼 클릭 시 테이블 초기화
     complete_button = dialog.findChild(QtWidgets.QPushButton, 'pushButton_7')
@@ -225,9 +234,20 @@ def main(args=None):
         print("Button 'pushButton_7' connected successfully.")
     else:
         print("Error: pushButton_7 not found in UI file.")
+    executor = MultiThreadedExecutor()
+    _arrival_kitchens ={}
+    for idx in range(1,10):
+        print("i",idx)
+        node_name = "arrival_kitchen_" + str(idx)
+        node_action_name = "arrive_robot_" + str(idx)
+        _arrival_kitchen = arrival_kitchen(node_name,node_action_name)
+        ros_arrive_thread = threading.Thread(target=lambda : executor.add_node(_arrival_kitchen), daemon=True)
+        ros_arrive_thread.start()
+        _arrival_kitchens[idx] = _arrival_kitchen
 
+    robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets,_arrival_kitchens))
     # ROS2 스레드 실행
-    ros_thread = RosThread(node)
+    ros_thread = RosThread(node,executor)
     ros_thread.start()
 
     # UI 실행
@@ -237,19 +257,31 @@ def main(args=None):
     ros_thread.join()
     
 def handle_databaseButton(dialog):
-    print("hi1")
     node = ui_tab.MainWindow()
     node.exec_()
-    pass
     
-def handle_servingButton():
+def handle_servingButton(ui_updater):
+    print("hi2")
+    ui_updater.reset_signal.emit()
     print("hi2")
     pass
-def handle_turnOFFButton():
+# def handle_turnOFFButton(robot_widgets):
+#     print("hi3")
+#     robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
+#     pass
+
+def handle_turnOFFButton(robot_widgets,_arrival_kitchens):
     print("hi3")
+    robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
+    result = _arrival_kitchens[1].send_goal_total_time(1)
+    print("무슨값?")
+    print(result)
+
     pass
-def handle_turnONButton():
+
+def handle_turnONButton(robot_widgets):
     print("hi4")
+    robot_widgets["robot_status"].setText(str("로봇 상태 : ON"))
     pass
 def handle_goKittchenButton():
     print("hi5")
