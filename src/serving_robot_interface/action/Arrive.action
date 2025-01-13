@@ -1,0 +1,8 @@
+# Goal
+float32 goal_time
+---
+# Result
+bool success
+---
+# Feedback
+float32 rmain_time
