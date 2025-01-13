@@ -251,7 +251,7 @@ def main(args=None):
     
     robot_widgets["databaseButton"].clicked.connect(lambda: handle_databaseButton(dialog))
     robot_widgets["servingButton"].clicked.connect(lambda: handle_servingButton(ui_updater))
-    # robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets))
+    robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets))
     robot_widgets["turnONButton"].clicked.connect(lambda: handle_turnONButton(robot_widgets))
     robot_widgets["goKittchenButton"].clicked.connect(handle_goKittchenButton)
     
@@ -294,6 +294,13 @@ def main(args=None):
         ros_arrive_thread.start()
         _arrival_kitchens[idx] = _arrival_kitchen
 
+     # 퍼블리셔를 통해 'turn_off' 메시지 전송
+    # sound = SoundPublisher()
+    # sound.send_sound_signal()
+    
+    
+    # result = _arrival_kitchens[1].send_goal_total_time(1)
+    
     robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets,_arrival_kitchens))
     # ROS2 스레드 실행
     ros_thread = RosThread(node,executor)
@@ -314,23 +321,14 @@ def handle_servingButton(ui_updater):
     ui_updater.reset_signal.emit()
     print("hi2")
     pass
-# def handle_turnOFFButton(robot_widgets):
-#     print("hi3")
-#     robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
-#     pass
+def handle_turnOFFButton(robot_widgets):
+    print("hi3")
+    robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
+    pass
 
 def handle_turnOFFButton(robot_widgets,_arrival_kitchens):
     print("hi3")
     robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
-     # 퍼블리셔를 통해 'turn_off' 메시지 전송
-    sound = SoundPublisher()
-    sound.send_sound_signal()
-    
-    
-    result = _arrival_kitchens[1].send_goal_total_time(1)
-    print("무슨값?")
-    print(result)
-
     pass
 
 def handle_turnONButton(robot_widgets):

@@ -17,6 +17,7 @@ class ClientNode(Node):
             'order_data',
             self.order_callback,
             10)
+        self.get_logger().info('test_client 완료')
 
     def order_callback(self, msg):
         # 키오스크로부터 받은 데이터를 서버로 전송
