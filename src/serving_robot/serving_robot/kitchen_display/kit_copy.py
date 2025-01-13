@@ -53,7 +53,7 @@ class UIUpdater(QtCore.QObject):
     reset_signal = QtCore.pyqtSignal() # 리셋 시그널 추가
     go_table_by_path = QtCore.pyqtSignal() 
     check_arrive_robot_signal = QtCore.pyqtSignal() 
-    check_goal_total_time_signal = QtCore.pyqtSignal() 
+    check_goal_total_time_signal = QtCore.pyqtSignal()
     def __init__(self, tables, node,_arrival_kitchens):
         super().__init__()
         self.tables = tables
@@ -64,6 +64,7 @@ class UIUpdater(QtCore.QObject):
                                   4 :[], 5 :[], 6 :[],
                                   7 :[], 8 :[], 9 :[],}
         self.road_table_go = []
+        self.current_serving_status = False
         self.road_table_go_data_save = {}
         self.check_arrive_robot = False
         self.check_goal_total_time = False
@@ -84,7 +85,7 @@ class UIUpdater(QtCore.QObject):
     # 주방서빙하는 키 = 동작 중이므로 무시한다. 이를 띄워야한다... 
     # 멈추는 키 = 일단은 리셋상태 유지, 다시 켜도 이동하지 않고, 주방 돌아오기를 수행
     # 전원 키는 키 = 그냥 동작한다. 굳이 구현 안 해도 됨                                        완료
-    # 주방 돌아오는 키 = 리셋했던 정보를 복원한다? 일단 보류 리셋된 채로 돌아옴. 주방으로 돌아온다.
+    # 주방 돌아오는 키 = 무시한다.
     # 일단 쭉 이동하는거 구현하기
     '''
     def change_staus(self):
@@ -93,8 +94,11 @@ class UIUpdater(QtCore.QObject):
         self.check_goal_total_time = True
     def start_scheduler_thread(self):
         # scheduler_robot_go_table 함수를 별도의 스레드로 실행
+        if self.current_serving_status:
+            return
         scheduler_thread = threading.Thread(target=self.scheduler_robot_go_table)
         scheduler_thread.start()
+        self.current_serving_status = True
         print("경로 찾기 쓰레드 시작")
          
     def scheduler_robot_go_table(self):
@@ -129,6 +133,7 @@ class UIUpdater(QtCore.QObject):
         self.check_arrive_robot = False
         print("주방으로 이동")
         print("경로 완료")
+        self.current_serving_status = False
         
         pass
     def update_table_orders_data(self,table_orders):
@@ -376,9 +381,10 @@ def handle_databaseButton(dialog):
     
 def handle_servingButton(ui_updater):
     print("hi2")
-    ui_updater.go_table_by_path.emit()
-    ui_updater.reset_signal.emit()
-    print("hi2")
+    if ui_updater.current_serving_status != True:
+        ui_updater.go_table_by_path.emit()
+        ui_updater.reset_signal.emit()
+        print("hi2")
     pass
 
 def handle_turnOFFButton(robot_widgets,node,ui_updater):
@@ -401,11 +407,14 @@ def handle_goKittchenButton(node,ui_updater):
         while ui_updater.check_arrive_robot != True:
             time.sleep(0.1)
         ui_updater.check_arrive_robot = False
+        ui_updater.current_serving_status = False
         
-    node.send_target_number(10)
-    scheduler_thread = threading.Thread(target=go_kitchen, args=(ui_updater,))
-    scheduler_thread.start()
-    print("hi5")
+    if ui_updater.current_serving_status != True:
+        ui_updater.current_serving_status = True
+        node.send_target_number(10)
+        scheduler_thread = threading.Thread(target=go_kitchen, args=(ui_updater,))
+        scheduler_thread.start()
+        print("hi5")
 
 
     pass
