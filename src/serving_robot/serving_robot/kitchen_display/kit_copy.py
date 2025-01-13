@@ -8,6 +8,7 @@ from serving_robot_interface.srv import MySrv
 from ..database import data_send
 import copy
 from ..database import ui_tab
+from ..kiosk.publisher import SoundPublisher
 
 # 테이블 업데이트 작업 클래스
 class TableUpdateTask(QRunnable):
@@ -229,7 +230,8 @@ def handle_turnOFFButton(robot_widgets):
     print("hi3")
     robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
      # 퍼블리셔를 통해 'turn_off' 메시지 전송
-    publisher.publish_sound('turn_off')
+    sound = SoundPublisher()
+    sound.send_sound_signal()
     
     
     pass

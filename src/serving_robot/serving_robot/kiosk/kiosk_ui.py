@@ -5,8 +5,9 @@ import threading
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Int32MultiArray
+from .subscriber import SoundSubscriber
+from rclpy.executors import MultiThreadedExecutor
 
-#from playsound import playsound
 class RobotArrivalDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -18,25 +19,12 @@ class RobotArrivalDialog(QtWidgets.QDialog):
             print("UI file not found!")
         
         # 알람음(mp3 파일) 경로
-        self.alarm_sound_path = "/home/gh/Desktop/ROKEY_serving_robot_A-2/src/serving_robot/resource/sound/알람음.mp3"
-        # 알람음 (비동기) 재생
-        self.play_alarm_sound()
-
         # 버튼 연결
         self.return_robot = self.findChild(QtWidgets.QPushButton, "return_robot")
         self.return_robot.clicked.connect(self.close)  # 버튼 클릭 시 창 닫기
     
     # 알람 재생 함수
-    def play_alarm_sound(self):
-        def play_sound():
-            print("j")
-            try:
-                playsound(self.alarm_sound_path)
-            except Exception as e:
-                print(f"Error playing sound: {e}")
-
-        # 비동기로 알람 실행
-        threading.Thread(target=play_sound, daemon=True).start()
+ 
         
 class PayDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -50,7 +38,21 @@ class PayDialog(QtWidgets.QDialog):
         # 버튼 연결
         self.return_robot = self.findChild(QtWidgets.QPushButton, "return_to_menu")
         self.return_robot.clicked.connect(self.close)  # 버튼 클릭 시 창 닫기
-        
+
+# ROS 2 스레드 클래스
+class RosThread(threading.Thread):
+    def __init__(self,exc):
+        super().__init__()
+        self.exc = exc
+    def run(self):
+        try:
+            self.exc.spin()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            self.node.destroy_node()
+            rclpy.shutdown()
+
 class KioskDialog(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
@@ -110,11 +112,19 @@ class KioskDialog(QtWidgets.QDialog):
         self.widgets["orderButton"].clicked.connect(self.handle_order)
         # 라벨 업데이트 함수
         self.update_labels()
-
         rclpy.init()
+        self.executor = MultiThreadedExecutor()
         self.node = Node('kiosk_node')
         self.publisher = self.node.create_publisher(Int32MultiArray, 'order_data', 10)
-
+        self.sound_sub = SoundSubscriber()
+        self.executor.add_node(self.sound_sub)
+        # self.return_robot.connect(self.arrival_kiosk.return_robot_signal)
+        ros_sound_thread = threading.Thread(target=lambda : self.executor.add_node(self.sound_sub), daemon=True)
+        ros_sound_thread.start()
+        ros_thread = RosThread(self.executor)
+        ros_thread.start()
+        
+        self.arrive_robot()
     def __order_menu_widget(self,menu_name):
         self.widgets[menu_name].setVisible(True)
         self.widgets["orders_layout"].addWidget(self.widgets[menu_name])
@@ -215,7 +225,7 @@ class KioskDialog(QtWidgets.QDialog):
         pay_dialog.exec_()  # 모달 창 띄우기
     def arrive_robot(self):
         """
-        헤애힐 것 :어떤 노드 신호를 받기(action), 후에 받은 후로부터 시간을 재서 보내주기, 사용자가 도착완료 버튼 누르면 result 혹은 canceld 상태보내기,
+        헤야할 것 :어떤 노드 신호를 받기(action), 후에 받은 후로부터 시간을 재서 보내주기, 사용자가 도착완료 버튼 누르면 result 혹은 canceld 상태보내기,
         아마 가능하다면 result가 편할 듯, 일정시간 후에는 무조건 result 보내기, 받았을 때 소리 및 UI 구현
         """
         robot_arrival_dialog = RobotArrivalDialog(self)
