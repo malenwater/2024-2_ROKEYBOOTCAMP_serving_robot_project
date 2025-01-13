@@ -30,6 +30,10 @@ setup(
             'test_client = serving_robot.kitchen_display.pub:main',
             'serving_robot_ui = serving_robot.database.ui_tab:main',
             'kiosk_ui = serving_robot.kiosk.kiosk_ui:main',
+            'robot_sub = serving_robot.kit_to_robot.control :main',
+            'robot_pub = serving_robot.kit_to_robot.publish :main',
+            'arrive_server = serving_robot.kiosk.arrival_kiosk:main',
+            'arrive_client = serving_robot.kitchen_display.arrival_kitchen:main',
             'subscriber = serving_robot.subscriber:main'
         ],
     },

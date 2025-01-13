@@ -14,9 +14,15 @@ find_package(rosidl_default_generators REQUIRED)
 # find_package(<dependency> REQUIRED)
 set(srv_files "srv/MySrv.srv")
 
+set(action_files
+  "action/Arrive.action"
+)
+
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${srv_files}
-  DEPENDENCIES builtin_interfaces)
+  ${action_files}
+  DEPENDENCIES builtin_interfaces
+)
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights

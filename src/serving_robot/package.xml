@@ -15,7 +15,10 @@
   <depend>python3-threading</depend>
   <depend>python3-queue</depend>
   <depend>PyQt5</depend>
-
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav2_msgs</depend> <!-- 네비게이션 액션 메시지 -->
+  
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
