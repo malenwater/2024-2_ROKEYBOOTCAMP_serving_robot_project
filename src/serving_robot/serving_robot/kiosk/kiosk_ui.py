@@ -130,17 +130,18 @@ class KioskDialog(QtWidgets.QDialog):
         # self.return_robot.connect(self.arrival_kiosk.return_robot_signal)
         ros_sound_thread = threading.Thread(target=lambda : self.executor.add_node(self.sound_sub), daemon=True)
         ros_sound_thread.start()
-        ros_thread = RosThread(self.executor)
-        ros_thread.start()
+
         
-        self.arrive_robot()
         self.return_robot_timeout.connect(self.shutdown_arrive_ui)
         self.return_robot_start.connect(self.arrive_robot)
         self.arrival_kiosk = arrival_kiosk(self.return_robot_timeout, 
                                            self.return_robot_start)
         self.return_robot.connect(self.arrival_kiosk.return_robot_signal)
-        ros_arrive_thread = threading.Thread(target=lambda : rclpy.spin(self.arrival_kiosk), daemon=True)
+        ros_arrive_thread = threading.Thread(target=lambda : self.executor.add_node(self.arrival_kiosk), daemon=True)
         ros_arrive_thread.start()
+        
+        ros_thread = RosThread(self.executor)
+        ros_thread.start()
         print("키오스크 준비 완료")
         
     def shutdown_arrive_ui(self):
@@ -199,6 +200,7 @@ class KioskDialog(QtWidgets.QDialog):
             if self.widgets[price_name]:
                 total_menu_price = self.menu_quantities[i] * self.menu_prices[i]
                 self.widgets[price_name].setText(f"{total_menu_price}원")
+                
     def reset_order(self):
         for i in range(len(self.menu_quantities)):
             order_name = self.__make_name_widgets("order_",str(i+1))
@@ -207,6 +209,7 @@ class KioskDialog(QtWidgets.QDialog):
             self.menu_quantities[i] = 0  # 각 메뉴의 수량을 0으로 설정
         if self.widgets["total_price"]:
             self.widgets["total_price"].setText(f"총 가격: 0원")
+            
     def handle_order(self):
         msg = Int32MultiArray()
         all_data = []
@@ -226,27 +229,17 @@ class KioskDialog(QtWidgets.QDialog):
         
         # UI 초기화
         self.reset_order()
-        self.alarm_arrive_robot_sound()
         #
         self.pay_orders()
         
         # 결제 처리 관련 로직 추가 가능
-        # self.alarm_arrive_robot_sound()
     # -------------------------------------------------------------------------------
-    def alarm_arrive_robot_sound(self):
-            """
-            음식 도착 알람을 울리는 함수
-            :param file_path: 알람음 파일 경로
-            """
-            robot_arrival_dialog = RobotArrivalDialog(self)
-            robot_arrival_dialog.exec_()
+
 
     def pay_orders(self):
-        robot_arrival_dialog = RobotArrivalDialog(self)
-        robot_arrival_dialog.exec_()
-
         pay_dialog = PayDialog(self)
         pay_dialog.exec_()  # 모달 창 띄우기
+        
     def arrive_robot(self):
         """
         헤야할 것 :어떤 노드 신호를 받기(action), 후에 받은 후로부터 시간을 재서 보내주기, 사용자가 도착완료 버튼 누르면 result 혹은 canceld 상태보내기,
