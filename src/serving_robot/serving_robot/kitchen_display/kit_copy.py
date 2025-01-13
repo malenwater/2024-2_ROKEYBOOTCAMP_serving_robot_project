@@ -57,12 +57,25 @@ class UIUpdater(QtCore.QObject):
         self.table_orders_data = {1 :[], 2 :[], 3 :[],
                                   4 :[], 5 :[], 6 :[],
                                   7 :[], 8 :[], 9 :[],}
+        self.road_table_go = []
     def reset_orders(self):
         print("hihiihihihi11")
         for table_number in self.table_orders_data:
             self.table_orders_data[table_number] = []
         self.update_tables({})
+    # 해야할 것, 현재 어떤 테이블에 값이 있는가? 이를 저장하고
+    # 이에 따라 이동을 한다.
+    # 이동 결과가 나오면 내가 만든 함수를 호출 하고 결과 값을 리턴 받는다. playsound 또한 보낸다.
+    # 비어있는지 확인하고 비어있으면 주방으로 아니면 똑같이 반복한다.
+    # 또한 사용자가 서빙 중 인데 키를 누른다면
+    # 주방서빙하는 키 = 동작 중이므로 무시한다. 이를 띄워야한다... 
+    # 멈추는 키 = 일단은 리셋상태 유지, 다시 켜도 이동하지 않고, 주방 돌아오기를 수행
+    # 전원 키는 키 = 그냥 동작한다. 리셋되지 않아야하는데 과연 그럴까?
+    # 주방 돌아오는 키 = 리셋했던 정보를 복원한다. 주방으로 돌아온다.
+    
+    def scheduler_robot_go_table(self):
         
+        pass
     def update_table_orders_data(self,table_orders):
         for table_number in table_orders:
             for count in table_orders[table_number]:
@@ -251,21 +264,21 @@ def main(args=None):
     
     robot_widgets["databaseButton"].clicked.connect(lambda: handle_databaseButton(dialog))
     robot_widgets["servingButton"].clicked.connect(lambda: handle_servingButton(ui_updater))
-    robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets))
-    robot_widgets["turnONButton"].clicked.connect(lambda: handle_turnONButton(robot_widgets))
-    robot_widgets["goKittchenButton"].clicked.connect(handle_goKittchenButton)
+    robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets,node))
+    robot_widgets["turnONButton"].clicked.connect(lambda: handle_turnONButton(robot_widgets,node))
+    robot_widgets["goKittchenButton"].clicked.connect(lambda: handle_goKittchenButton(node))
     
     
-    # 제어 버튼 (빨강 초록 파랑)
-    if robot_widgets["turnOFFButton"]:
-        robot_widgets["turnOFFButton"].clicked.connect(lambda: node.send_target_number(11))  # 11 발행
-        print("Turn OFF button connected to send 11.")
-    if robot_widgets["turnONButton"]:
-        robot_widgets["turnONButton"].clicked.connect(lambda: node.send_target_number(12))  # 12 발행
-        print("Turn ON button connected to send 12.")
-    if robot_widgets["goKittchenButton"]:
-        robot_widgets["goKittchenButton"].clicked.connect(lambda: node.send_target_number(0))  # 0 발행
-        print("Go Kitchen button connected to send 0.")
+    # # 제어 버튼 (빨강 초록 파랑)
+    # if robot_widgets["turnOFFButton"]:
+    #     robot_widgets["turnOFFButton"].clicked.connect(lambda: node.send_target_number(11))  # 11 발행
+    #     print("Turn OFF button connected to send 11.")
+    # if robot_widgets["turnONButton"]:
+    #     robot_widgets["turnONButton"].clicked.connect(lambda: node.send_target_number(12))  # 12 발행
+    #     print("Turn ON button connected to send 12.")
+    # if robot_widgets["goKittchenButton"]:
+    #     robot_widgets["goKittchenButton"].clicked.connect(lambda: node.send_target_number(10))  # 0 발행
+    #     print("Go Kitchen button connected to send 0.")
 
 
     for table in tables:
@@ -321,23 +334,24 @@ def handle_servingButton(ui_updater):
     ui_updater.reset_signal.emit()
     print("hi2")
     pass
-def handle_turnOFFButton(robot_widgets):
+
+def handle_turnOFFButton(robot_widgets,node):
     print("hi3")
     robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
+    node.send_target_number(11)
     pass
 
-def handle_turnOFFButton(robot_widgets,_arrival_kitchens):
-    print("hi3")
-    robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
-    pass
-
-def handle_turnONButton(robot_widgets):
+def handle_turnONButton(robot_widgets,node):
     print("hi4")
     robot_widgets["robot_status"].setText(str("로봇 상태 : ON"))
+    node.send_target_number(12)
     pass
-def handle_goKittchenButton():
+
+def handle_goKittchenButton(node):
     print("hi5")
+    node.send_target_number(10)
     pass
+
 def get_product_price(self, product_id):
         query = "SELECT price FROM products WHERE product_id = %s"
         self.cursor.execute(query, (product_id,))

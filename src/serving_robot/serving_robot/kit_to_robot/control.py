@@ -35,12 +35,12 @@ class NavigationSubscriber(Node):
         number = msg.data
         self.get_logger().info(f'Received target number: {number}')
 
-        if number == 11:
+        if number == 11 and self.is_paused != True:
             self.is_paused = True  # 일시 정지 설정
             self.cancel_current_goal()
             self.get_logger().info('Paused: Robot stopped and commands ignored.')
 
-        elif number == 12:
+        elif number == 12 and self.is_paused != False:
             self.is_paused = False  # 재개 설정
             self.reconnect_to_action_server()  # 액션 클라이언트를 새로 생성
             self.current_goal_handle = None  # 현재 goal 상태 초기화
