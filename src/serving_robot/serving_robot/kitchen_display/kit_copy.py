@@ -182,8 +182,8 @@ def main(args=None):
     
     robot_widgets["databaseButton"].clicked.connect(lambda: handle_databaseButton(dialog))
     robot_widgets["servingButton"].clicked.connect(lambda: handle_servingButton(ui_updater))
-    robot_widgets["turnOFFButton"].clicked.connect(handle_turnOFFButton)
-    robot_widgets["turnONButton"].clicked.connect(handle_turnONButton)
+    robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets))
+    robot_widgets["turnONButton"].clicked.connect(lambda: handle_turnONButton(robot_widgets))
     robot_widgets["goKittchenButton"].clicked.connect(handle_goKittchenButton)
     
     for table in tables:
@@ -222,11 +222,14 @@ def handle_servingButton(ui_updater):
     ui_updater.reset_signal.emit()
     print("hi2")
     pass
-def handle_turnOFFButton():
+def handle_turnOFFButton(robot_widgets):
     print("hi3")
+    robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
+    
     pass
-def handle_turnONButton():
+def handle_turnONButton(robot_widgets):
     print("hi4")
+    robot_widgets["robot_status"].setText(str("로봇 상태 : ON"))
     pass
 def handle_goKittchenButton():
     print("hi5")
