@@ -44,7 +44,7 @@ class TableUpdateTask(QRunnable):
 # UI 업데이트 클래스
 class UIUpdater(QtCore.QObject):
     update_signal = QtCore.pyqtSignal(dict)
-
+    reset_signal = QtCore.pyqtSignal() # 리셋 시그널 추가
     def __init__(self, tables):
         super().__init__()
         self.tables = tables
@@ -53,9 +53,11 @@ class UIUpdater(QtCore.QObject):
                                   4 :[], 5 :[], 6 :[],
                                   7 :[], 8 :[], 9 :[],}
     def reset_orders(self):
+        print("hihiihihihi11")
         for table_number in self.table_orders_data:
             self.table_orders_data[table_number] = []
-            
+        self.update_tables({})
+        
     def update_table_orders_data(self,table_orders):
         for table_number in table_orders:
             for count in table_orders[table_number]:
@@ -171,8 +173,15 @@ def main(args=None):
         "goKittchenButton" : dialog.findChild(QtWidgets.QPushButton, "goKittchenButton"),
         "robot_status" : dialog.findChild(QtWidgets.QLabel, "robot_status"),
     }
+    
+    # UIUpdater와 Node 인스턴스 생성
+    ui_updater = UIUpdater(tables)
+    ui_updater.update_signal.connect(ui_updater.update_tables)  # 시그널 연결
+    ui_updater.reset_signal.connect(ui_updater.reset_orders)  # 시그널 연결
+    node = MyNode(tables, ui_updater)
+    
     robot_widgets["databaseButton"].clicked.connect(lambda: handle_databaseButton(dialog))
-    robot_widgets["servingButton"].clicked.connect(handle_servingButton)
+    robot_widgets["servingButton"].clicked.connect(lambda: handle_servingButton(ui_updater))
     robot_widgets["turnOFFButton"].clicked.connect(handle_turnOFFButton)
     robot_widgets["turnONButton"].clicked.connect(handle_turnONButton)
     robot_widgets["goKittchenButton"].clicked.connect(handle_goKittchenButton)
@@ -184,10 +193,7 @@ def main(args=None):
             print(f"{table.objectName()} loaded successfully.")
         table.setVisible(False)
 
-    # UIUpdater와 Node 인스턴스 생성
-    ui_updater = UIUpdater(tables)
-    ui_updater.update_signal.connect(ui_updater.update_tables)  # 시그널 연결
-    node = MyNode(tables, ui_updater)
+
 
     # 버튼 클릭 시 테이블 초기화
     complete_button = dialog.findChild(QtWidgets.QPushButton, 'pushButton_7')
@@ -208,12 +214,12 @@ def main(args=None):
     ros_thread.join()
     
 def handle_databaseButton(dialog):
-    print("hi1")
     node = ui_tab.MainWindow()
     node.exec_()
-    pass
     
-def handle_servingButton():
+def handle_servingButton(ui_updater):
+    print("hi2")
+    ui_updater.reset_signal.emit()
     print("hi2")
     pass
 def handle_turnOFFButton():
