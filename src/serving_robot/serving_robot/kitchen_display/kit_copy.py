@@ -223,9 +223,14 @@ def handle_servingButton(ui_updater):
     ui_updater.reset_signal.emit()
     print("hi2")
     pass
+    
+    
 def handle_turnOFFButton(robot_widgets):
     print("hi3")
     robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
+     # 퍼블리셔를 통해 'turn_off' 메시지 전송
+    publisher.publish_sound('turn_off')
+    
     
     pass
 def handle_turnONButton(robot_widgets):
