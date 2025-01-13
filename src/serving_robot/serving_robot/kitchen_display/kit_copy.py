@@ -8,9 +8,11 @@ from serving_robot_interface.srv import MySrv
 from ..database import data_send
 import copy
 from ..database import ui_tab
+from ..kiosk.publisher import SoundPublisher
 from std_msgs.msg import Int32
 from ..kitchen_display.arrival_kitchen import arrival_kitchen
 from rclpy.executors import MultiThreadedExecutor
+
 # 테이블 업데이트 작업 클래스
 class TableUpdateTask(QRunnable):
     def __init__(self, tables, table_orders):
@@ -320,6 +322,11 @@ def handle_servingButton(ui_updater):
 def handle_turnOFFButton(robot_widgets,_arrival_kitchens):
     print("hi3")
     robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
+     # 퍼블리셔를 통해 'turn_off' 메시지 전송
+    sound = SoundPublisher()
+    sound.send_sound_signal()
+    
+    
     result = _arrival_kitchens[1].send_goal_total_time(1)
     print("무슨값?")
     print(result)

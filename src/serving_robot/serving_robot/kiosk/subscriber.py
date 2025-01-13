@@ -12,6 +12,7 @@ class SoundSubscriber(Node):
             self.listener_callback,
             10)
         self.subscription
+        self.get_logger().info('SoundSubscriber 준비완료')
 
     def listener_callback(self, msg):
         self.get_logger().info(f'Received: {msg.data}')
@@ -20,7 +21,7 @@ class SoundSubscriber(Node):
 
     def play_sound(self):
         # 소리 파일 경로를 설정하고 재생
-        playsound('/home/gh/Desktop/ROKEY_serving_robot_A-2/src/serving_robot/resource/sound/알람음.mp3')  # 실제 경로로 설정
+        playsound('./src/serving_robot/resource/sound/알람음.mp3')  # 실제 경로로 설정
 
 def main(args=None):
     rclpy.init(args=args)
