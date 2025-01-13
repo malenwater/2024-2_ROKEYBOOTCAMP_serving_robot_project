@@ -1,20 +1,33 @@
 import rclpy
 from rclpy.node import Node
-from serving_robot_interface.srv import MySrv  # 서비스 타입 이름 수정
+from serving_robot_interface.srv import MySrv
+from std_msgs.msg import Int32MultiArray
 
 class ClientNode(Node):
     def __init__(self):
         super().__init__('client_node')
-        self.client = self.create_client(MySrv, 'order_srv')  # MySrv로 수정
+        # 서비스 클라이언트 설정
+        self.client = self.create_client(MySrv, 'order_srv')
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Service not available, waiting again...')
+            
+        # 토픽 구독 설정
+        self.subscription = self.create_subscription(
+            Int32MultiArray,
+            'order_data',
+            self.order_callback,
+            10)
+
+    def order_callback(self, msg):
+        # 키오스크로부터 받은 데이터를 서버로 전송
+        self.send_request(msg.data)
 
     def send_request(self, data):
         if len(data) % 3 != 0:
             self.get_logger().error('Data length must be a multiple of 3')
             return
-
-        request = MySrv.Request()  # 서비스 요청 생성
+        
+        request = MySrv.Request()
         request.data = data
         future = self.client.call_async(request)
         future.add_done_callback(self.handle_response)
@@ -29,18 +42,8 @@ class ClientNode(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = ClientNode()
-
     try:
-        while rclpy.ok():
-            input_str = input("Enter a list of integers (length must be a multiple of 3) (e.g., [1,2,3,4,5,6]): ")
-            try:
-                data = eval(input_str)
-                if len(data) % 3 != 0:
-                    print("The list length must be a multiple of 3.")
-                    continue
-                node.send_request(data)
-            except (SyntaxError, ValueError):
-                print("Invalid input format. Please enter a valid list of integers.")
+        rclpy.spin(node)
     except KeyboardInterrupt:
         pass
     finally:
@@ -49,7 +52,3 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
-
-
-
-
