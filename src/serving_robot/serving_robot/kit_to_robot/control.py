@@ -12,14 +12,24 @@ class NavigationSubscriber(Node):
         self.subscription = self.create_subscription(Int32, 'table', self.number_callback, 10)
         self.publisher = self.create_publisher(Int32, 'arrival_notification', 10)  # 발행자 추가
         self.navigate_action_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
+        # self.goal_coordinates = [
+        #       (1.90, 0.67), 
+        #       (0.72, 1.0), (0.72, 0), (0.72, -1),
+        #       (-0.33, 1.0), (-0.33, 0), (-0.33, -1),
+        #       (-1.4, 1), (-1.4, 0), (-1.4, -1)
+        # ]
         self.goal_coordinates = [
-            (1.90, 0.67), (0.72, 1.0), (0.72, 0), (0.72, -1),
-            (-0.33, 1.0), (-0.33, 0), (-0.33, -1), (-1.4, 1), (-1.4, 0), (-1.4, -1)
+            None,
+            (3.1, 2.2), (3.7, 0.5), (3.1, -1.1),
+            (2.00, 2.2), (2.00, 0.0), (2.00, -1.1), 
+            (0.8, 2.1), (0.2, 0.5), (0.8, -1.1),
+            (0.1, 0.1),
         ]
         self.is_paused = False  # 일시 정지 상태 여부
         self.current_goal_handle = None  # 현재 액션 핸들 저장
         self.send_goal_future = None  # 액션 목표 전송 결과 저장
         self.current_target_number = None  # 목표 번호 초기화
+        self.get_logger().info('로봇 nav 준비완료')
 
     def number_callback(self, msg):
         number = msg.data
@@ -36,13 +46,14 @@ class NavigationSubscriber(Node):
             self.current_goal_handle = None  # 현재 goal 상태 초기화
             self.get_logger().info('Resumed: Robot will now accept navigation goals.')
 
-        elif 0 <= number <= 9:
+        elif 0 <= number <= 10:
             if self.is_paused:
                 self.get_logger().warn(f'Received target number {number}, but the robot is paused. Ignoring command.')
             else:
                 map_x, map_y = self.goal_coordinates[number]
                 self.current_target_number = number  # 목표 번호 저장
                 self.send_goal(map_x, map_y)
+                print("map_x, map_y",map_x, map_y)
 
     def send_goal(self, map_x, map_y):
         if not self.navigate_action_client.wait_for_server(timeout_sec=5.0):
