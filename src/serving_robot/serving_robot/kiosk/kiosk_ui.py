@@ -1,6 +1,5 @@
 import sys
 from PyQt5 import QtWidgets, uic
-from playsound import playsound
 import threading
 import rclpy
 from rclpy.node import Node
@@ -10,7 +9,6 @@ from rclpy.executors import MultiThreadedExecutor
 import threading
 from .arrival_kiosk import arrival_kiosk
 from PyQt5.QtCore import pyqtSignal
-#from playsound import playsound
 
 class RobotArrivalDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):

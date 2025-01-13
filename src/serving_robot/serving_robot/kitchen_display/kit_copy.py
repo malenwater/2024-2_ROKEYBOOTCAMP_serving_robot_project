@@ -1,5 +1,6 @@
 import sys
 import threading
+import ctypes
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSlot
 import rclpy
@@ -59,19 +60,21 @@ class UIUpdater(QtCore.QObject):
         self.tables = tables
         self.node = node  # MyNode 인스턴스를 저장
         self._arrival_kitchens = _arrival_kitchens
+        self.scheduler_thread_10 = None
         self.thread_pool = QThreadPool()  # 스레드 풀 생성
         self.table_orders_data = {1 :[], 2 :[], 3 :[],
                                   4 :[], 5 :[], 6 :[],
                                   7 :[], 8 :[], 9 :[],}
         self.road_table_go = []
+        self.TurnON_flag = True
         self.current_serving_status = False
         self.road_table_go_data_save = {}
         self.check_arrive_robot = False
         self.check_goal_total_time = False
+        self.scheduler_thread = None
         self.check_arrive_robot_signal.connect(self.change_staus)
         self.check_goal_total_time_signal.connect(self.change_staus_kiosk)
     def reset_orders(self):
-        print("hihiihihihi11")
         for table_number in self.table_orders_data:
             self.table_orders_data[table_number] = []
         self.update_tables({})
@@ -94,16 +97,16 @@ class UIUpdater(QtCore.QObject):
         self.check_goal_total_time = True
     def start_scheduler_thread(self):
         # scheduler_robot_go_table 함수를 별도의 스레드로 실행
-        if self.current_serving_status:
+        self.road_table_go = [key for key, value in self.table_orders_data.items() if value]
+        if self.current_serving_status or len(self.road_table_go) == 0:
             return
-        scheduler_thread = threading.Thread(target=self.scheduler_robot_go_table)
-        scheduler_thread.start()
+        self.scheduler_thread = threading.Thread(target=self.scheduler_robot_go_table, daemon=True)
+        self.scheduler_thread.start()
         self.current_serving_status = True
         print("경로 찾기 쓰레드 시작")
          
     def scheduler_robot_go_table(self):
         print("경로 시작")
-        self.road_table_go = [key for key, value in self.table_orders_data.items() if value]
         self.road_table_go_data_save = copy.deepcopy(self.table_orders_data)
         print(self.road_table_go)
         print(self.road_table_go_data_save)
@@ -113,7 +116,7 @@ class UIUpdater(QtCore.QObject):
             print("자러간다.")
             while self.check_arrive_robot != True:
                 time.sleep(0.1)
-                # print(self.check_arrive_robot)
+                print(self.check_arrive_robot)
             print("깨어났다.. 제어 2개를 하고 값을 받을 때까지 대기한다.")
             sound = SoundPublisher()
             sound.send_sound_signal(table_number)
@@ -323,7 +326,6 @@ def main(args=None):
         "goKittchenButton" : dialog.findChild(QtWidgets.QPushButton, "goKittchenButton"),
         "robot_status" : dialog.findChild(QtWidgets.QLabel, "robot_status"),
     }
-    
     # UIUpdater와 Node 인스턴스 생성
     ui_updater = UIUpdater(tables, None, None)
     ui_updater.update_signal.connect(ui_updater.update_tables)  # 시그널 연결
@@ -364,7 +366,6 @@ def main(args=None):
         _arrival_kitchens[idx] = _arrival_kitchen
     ui_updater._arrival_kitchens = _arrival_kitchens 
     
-    robot_widgets["turnOFFButton"].clicked.connect(lambda: handle_turnOFFButton(robot_widgets,_arrival_kitchens))
     # ROS2 스레드 실행
     ros_thread = RosThread(node,executor)
     ros_thread.start()
@@ -380,41 +381,57 @@ def handle_databaseButton(dialog):
     node.exec_()
     
 def handle_servingButton(ui_updater):
-    print("hi2")
-    if ui_updater.current_serving_status != True:
+    if ui_updater.current_serving_status != True and ui_updater.TurnON_flag:
         ui_updater.go_table_by_path.emit()
-        ui_updater.reset_signal.emit()
-        print("hi2")
-    pass
+        if len(ui_updater.road_table_go) != 0:
+            ui_updater.reset_signal.emit()
 
 def handle_turnOFFButton(robot_widgets,node,ui_updater):
-    print("hi3")
     robot_widgets["robot_status"].setText(str("로봇 상태 : OFF"))
     node.send_target_number(11)
     ui_updater.check_arrive_robot = False
+    ui_updater.current_serving_status = False
+    ui_updater.check_goal_total_time = False
+    ui_updater.TurnON_flag = False    
+    try:
+        terminate_thread(ui_updater.scheduler_thread)
+        print("1~9 스레드가 종료되었습니다.")
+        ui_updater.scheduler_thread = None
+    except SystemError as e:
+        print("SystemError 발생:", e)
+    except Exception as e:
+        print("예상치 못한 오류 발생:", e)
+    try:
+        terminate_thread(ui_updater.scheduler_thread_10)
+        print("10 스레드가 종료되었습니다.")
+        ui_updater.scheduler_thread_10 = None
+    except SystemError as e:
+        print("SystemError 발생:", e)
+    except Exception as e:
+        print("예상치 못한 오류 발생:", e)
     pass
 
 def handle_turnONButton(robot_widgets,node,ui_updater):
-    print("hi4")
     robot_widgets["robot_status"].setText(str("로봇 상태 : ON"))
     node.send_target_number(12)
     ui_updater.check_arrive_robot = False
+    ui_updater.TurnON_flag = True    
     pass
 
 def handle_goKittchenButton(node,ui_updater):
-    print("hi5")
     def go_kitchen(ui_updater):
         while ui_updater.check_arrive_robot != True:
             time.sleep(0.1)
         ui_updater.check_arrive_robot = False
         ui_updater.current_serving_status = False
         
-    if ui_updater.current_serving_status != True:
+     
+    if ui_updater.current_serving_status != True and ui_updater.TurnON_flag:
         ui_updater.current_serving_status = True
         node.send_target_number(10)
-        scheduler_thread = threading.Thread(target=go_kitchen, args=(ui_updater,))
+        scheduler_thread = threading.Thread(target=go_kitchen, args=(ui_updater,), daemon=True)
         scheduler_thread.start()
-        print("hi5")
+        ui_updater.scheduler_thread_10 = scheduler_thread
 
 
     pass
@@ -428,7 +445,18 @@ def get_product_price(self, product_id):
         else:
             print(f"상품 ID {product_id}에 대한 가격을 찾을 수 없습니다.")
             return 0  # 기본값 0 반환
-
+def terminate_thread(thread):
+    if not thread.is_alive():
+        return
+    exc = ctypes.py_object(SystemExit)
+    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
+        ctypes.c_long(thread.ident), exc
+    )
+    if res == 0:
+        raise ValueError("스레드 ID를 찾을 수 없습니다.")
+    elif res > 1:
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(thread.ident, None)
+        raise SystemError("스레드 종료에 실패했습니다.")
 
 if __name__ == '__main__':
     main()
