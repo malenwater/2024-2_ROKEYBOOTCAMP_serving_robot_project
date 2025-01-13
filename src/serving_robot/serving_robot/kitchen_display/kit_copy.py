@@ -101,6 +101,7 @@ class MyNode(Node):
             response.message = "No data received"
             return response
 
+        # 1) 수신 데이터 파싱 (table_index, menu_index, quantity)
         for i in range(0, len(data), 3):
             try:
                 table_index = data[i]
@@ -116,18 +117,64 @@ class MyNode(Node):
                 response.message = "Malformed data"
                 return response
 
-        # UI 업데이트 요청을 시그널을 통해 보냄
+        # 2) UI 업데이트 (기존과 동일)
         self.ui_updater.update_signal.emit(table_orders)
 
+        # 3) DB 저장 로직 추가 ------------------------------------------
+        import datetime
+        from ..database import data_send
+
+        data_sender = data_send.DataSender()
+        # get_next_order_id()는 MySQLConnector 내부에 있음 → db_connector로 접근
+        order_id = data_sender.db_connector.get_next_order_id()
+        created_at = updated_at = datetime.datetime.now()
+
+        # table_orders 예: {1: [[4,1], [5,1]]}
+        for table_number, products in table_orders.items():
+            # (3-1) 먼저 각 테이블별 총가격 계산
+            total_price = 0
+            for product in products:
+                product_id = product[0]
+                quantity = product[1]
+                price = data_sender.db_connector.get_product_price(product_id)
+                total_price += price * quantity
+            
+            # (3-2) orders 테이블에 INSERT
+            order_data = {
+                "order_id": order_id,
+                "total_price": total_price,
+                "table_number": table_number,
+                "created_date": created_at,
+                "updated_date": updated_at
+            }
+            if data_sender.insert_order(order_data):
+                print(f"주문 정보 삽입 성공 (order_id = {order_id})")
+                # (3-3) orders_product 테이블에 INSERT
+                for product in products:
+                    product_id = product[0]
+                    quantity = product[1]
+                    price = data_sender.db_connector.get_product_price(product_id)
+                    order_product_data = {
+                        "order_id": order_id,
+                        "product_id": product_id,
+                        "quantity": quantity,
+                        "price": price,
+                        "delivery_completed": 0
+                    }
+                    if data_sender.insert_order_product(order_product_data):
+                        print(f"주문 상품 정보 삽입 성공 (product_id = {product_id})")
+                    else:
+                        print("주문 상품 정보 삽입 실패")
+            else:
+                print("주문 정보 삽입 실패")
+
+        data_sender.close()
+        # ---------------------------------------------------------------
+
         response.success = True
-        response.message = "Order received and processed"
+        response.message = "Order received and processed (DB insertion done)"
         return response
 
-    def clear_tables(self):
-        for table in self.tables:
-            table.setRowCount(0)
-            table.setVisible(False)
-        self.get_logger().info("Tables cleared.")
 
 # ROS 2 스레드 클래스
 class RosThread(threading.Thread):
@@ -235,5 +282,16 @@ def handle_turnONButton(robot_widgets):
 def handle_goKittchenButton():
     print("hi5")
     pass
+def get_product_price(self, product_id):
+        query = "SELECT price FROM products WHERE product_id = %s"
+        self.cursor.execute(query, (product_id,))
+        result = self.cursor.fetchone()
+        if result:
+            return result[0]  # 가격 반환
+        else:
+            print(f"상품 ID {product_id}에 대한 가격을 찾을 수 없습니다.")
+            return 0  # 기본값 0 반환
+
+
 if __name__ == '__main__':
     main()
