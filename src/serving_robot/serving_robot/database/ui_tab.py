@@ -255,8 +255,8 @@ class PopupDialog3(QDialog):
 
 
 class MainWindow(QDialog):
-    def __init__(self):
-        super().__init__()
+    def __init__(self,parent=None):
+        super().__init__(parent=parent)
         self.setWindowTitle('Main Window')
         loadUi('./src/serving_robot/resource/ui/button.ui', self)
 
