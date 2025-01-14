@@ -139,7 +139,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1137</y>
+         <y>-456</y>
          <width>960</width>
          <height>1530</height>
         </rect>
@@ -695,7 +695,7 @@
                   </layout>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="selectButton_9">
+                  <widget class="QPushButton" name="selectButton_7">
                    <property name="minimumSize">
                     <size>
                      <width>140</width>
@@ -1390,7 +1390,7 @@
                   </layout>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="selectButton_7">
+                  <widget class="QPushButton" name="selectButton_9">
                    <property name="minimumSize">
                     <size>
                      <width>140</width>
@@ -2787,7 +2787,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-946</y>
+          <y>0</y>
           <width>562</width>
           <height>1073</height>
          </rect>
