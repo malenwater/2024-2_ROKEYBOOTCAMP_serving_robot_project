@@ -169,16 +169,35 @@ class MyNode(Node):
         super().__init__('kitchen_node')
         self.tables = tables
         self.ui_updater = ui_updater
+        self.expected_sequence = []  # 서비스에서 받은 테이블 번호 순서
+        self.received_sequence = []  # 실제 구독한 테이블 번호 순서
+
         # self.check_arrive_robot_to_table = False
         self.srv = self.create_service(MySrv, 'order_srv', self.service_callback)
         self.subscription = self.create_subscription(Int32, 'arrival_notification', self.notification_callback, 10) # 로봇에서 테이블 번호 구독
-        self.publisher = self.create_publisher(Int32, 'table', 10) # 부엌에서 로봇으로 테이블 번호 발행
+        
+        #주방에서 로봇 토픽 발행을 QOS로 설정
+        self.publisher = self.create_publisher(
+    Int32,
+    'table',
+    qos_profile=rclpy.qos.QoSProfile(
+        reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,  # 반드시 메시지 전달
+        history=rclpy.qos.HistoryPolicy.KEEP_LAST,  # 최신 명령 1개 유지
+        depth=1
+    )
+)
+
         print("Service 'order_srv' created and waiting for requests...")
 
     def service_callback(self, request, response):
         data = request.data
         table_orders = {}
 
+        # 로깅용 
+        self.expected_sequence = [data[i] for i in range(0, len(data), 3)]  # 3의 배수 인덱스로 테이블 번호 추출
+        self.received_sequence = []  # 새로운 수신 시 초기화
+        
+        
         if not data:
             print("Received empty data")
             response.success = False
@@ -261,11 +280,46 @@ class MyNode(Node):
     def notification_callback(self, msg):
         """구독자 콜백 함수: 도착 알림 메시지 수신 시 출력"""
         table_number = msg.data
+        self.received_sequence.append(table_number)
         self.get_logger().info(f"Received arrival notification: Table {table_number}")
         self.ui_updater.check_arrive_robot_signal.emit()
         print("신호를 보내긴 보냄")
+        if not (1 <= table_number <= 12):
+            self.get_logger().warn(f"Invalid table number received: {table_number}")
+            return
+        current_index = len(self.received_sequence) - 1
+        if current_index < len(self.expected_sequence):
+            expected_number = self.expected_sequence[current_index]
+            if table_number == expected_number:
+                self.get_logger().info(f"Correct table number received: {table_number}")
+            else:
+                self.get_logger().warn(f"Out of order: expected {expected_number}, but received {table_number}")
+        else:
+            self.get_logger().warn(f"Extra table number received: {table_number}")
+
+        # 모든 테이블 번호 수신 여부 확인
+        if len(self.received_sequence) == len(self.expected_sequence):
+            if self.received_sequence == self.expected_sequence:
+                self.get_logger().info(f"All table numbers received in correct order: {self.received_sequence}")
+            else:
+                self.get_logger().warn(f"Final order out of sequence: {self.received_sequence}")
+            self.received_sequence.clear()
+
+        # 수신 개수 확인
+        if len(self.received_sequence) > len(self.expected_sequence):
+            self.get_logger().error(f"Too many table numbers received: {self.received_sequence}")
+            self.received_sequence.clear()
+        elif len(self.received_sequence) < len(self.expected_sequence) and len(self.received_sequence) == len(self.expected_sequence) - 1:
+            self.get_logger().error("Too few table numbers received.")
+
+
+
+
         # self.check_arrive_robot_to_table = True
         # print("도착했다.",self.check_arrive_robot_to_table)
+
+
+
     
     # 퍼블리시 메소드 (스레드 처리 완료)
     def send_target_number(self, number):
@@ -300,12 +354,15 @@ class RosThread(threading.Thread):
 def main(args=None):
     rclpy.init(args=args)
     app = QtWidgets.QApplication(sys.argv)
-
+    
     # UI 파일 로드
     ui_file = "./src/serving_robot/resource/ui/kit_menu_ui.ui"
     dialog = QtWidgets.QDialog()
     uic.loadUi(ui_file, dialog)
+    
+    
 
+    
     # 테이블 위젯 가져오기
     tables = [
         dialog.findChild(QtWidgets.QTableWidget, 'tableWidget_2'),
