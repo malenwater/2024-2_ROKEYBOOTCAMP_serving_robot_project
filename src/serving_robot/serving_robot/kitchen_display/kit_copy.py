@@ -21,7 +21,8 @@ class TableUpdateTask(QRunnable):
         super().__init__()
         self.tables = tables
         self.table_orders = table_orders
-        self.menu_number = ["","짜장면","간짜장","쟁반짜장",
+        self.menu_number = ["",
+                "짜장면","간짜장","쟁반짜장",
                 "짬뽕","짬뽕밥","짜장밥",
                 "탕수육","깐풍기","군만두",
                 "팔보채","고추잡채","꽃 빵",
