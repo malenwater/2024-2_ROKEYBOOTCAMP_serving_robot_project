@@ -156,15 +156,14 @@ class DataSender:
         }
         """
         query = """
-            INSERT INTO orders_product (order_id, product_id, quantity, price, delivery_completed)
-            VALUES (%s, %s, %s, %s, %s);
+            INSERT INTO orders_product (order_id, product_id, quantity, price)
+            VALUES (%s, %s, %s, %s);
         """
         values = (
             order_product_data["order_id"],
             order_product_data["product_id"],
             order_product_data["quantity"],
             order_product_data["price"],
-            order_product_data["delivery_completed"]
         )
         success = self.db_connector.insert_data(query, values)
         if not success:

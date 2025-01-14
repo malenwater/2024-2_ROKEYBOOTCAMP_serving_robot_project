@@ -227,7 +227,7 @@ class MyNode(Node):
         # 3) DB 저장 로직 추가 ------------------------------------------
         import datetime
         from ..database import data_send
-
+        
         data_sender = data_send.DataSender()
         # get_next_order_id()는 MySQLConnector 내부에 있음 → db_connector로 접근
         order_id = data_sender.db_connector.get_next_order_id()
@@ -263,7 +263,6 @@ class MyNode(Node):
                         "product_id": product_id,
                         "quantity": quantity,
                         "price": price,
-                        "delivery_completed": 0
                     }
                     if data_sender.insert_order_product(order_product_data):
                         print(f"주문 상품 정보 삽입 성공 (product_id = {product_id})")
