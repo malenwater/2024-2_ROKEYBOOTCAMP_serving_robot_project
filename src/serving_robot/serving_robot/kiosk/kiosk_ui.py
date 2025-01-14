@@ -66,7 +66,7 @@ class KioskDialog(QtWidgets.QDialog):
         self.robot_arrival_dialog = None  # 초기화
         self.return_robot_flag = True
         uic.loadUi(ui_file, self)
-        self.table_number = 2
+        self.table_number = 8
         self.menu_number = ["","짜장면","간짜장","쟁반짜장",
                        "짬뽕","짬뽕밥","짜장밥",
                        "탕수육","깐풍기","군만두",
