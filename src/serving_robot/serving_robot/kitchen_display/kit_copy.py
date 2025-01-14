@@ -120,7 +120,7 @@ class UIUpdater(QtCore.QObject):
             print("깨어났다.. 제어 2개를 하고 값을 받을 때까지 대기한다.")
             sound = SoundPublisher()
             sound.send_sound_signal(table_number)
-            self._arrival_kitchens[8].send_goal_total_time(10)
+            self._arrival_kitchens[table_number].send_goal_total_time(10)
             while self.check_goal_total_time != True:
                 time.sleep(0.1)
                 # time.sleep(3)
