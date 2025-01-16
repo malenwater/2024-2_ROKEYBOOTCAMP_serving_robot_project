@@ -1,4 +1,4 @@
-# 2024-2_ROKEY_serving_robot_project
+# 2024-2_ROKEYBOOTCAMP_serving_robot_project_1
 2024년 2기 1주차, ROKEY Boot 캠프의 터틀 봇을 이용한 서빙 로봇 서비스를 만드는 프로젝트입니다.
 
 
