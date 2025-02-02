@@ -67,6 +67,29 @@ ROS 프로젝트를 위해 파이썬 패키지의 의존성을 설치하기 위�
 이후, 키오스크 UI와 주방 디스플레이을 조정하여 고객, 주방장, 로봇의 상호작용을 볼 수 있다.
 키오스크 번호는 9번까지 있으며 해당 번호는 serving_robot 패키지 내 코드 패키지 kiosk의 kiosk_ui.py 파일의 KioskDialog 클래스 내 self.table_number 번호를 1 ~ 9번으로 변경하여 주문 받는 키오스크를 조정할 수 있다.
 
+# 프로젝트 설계도 및 간단한 설명
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/ded49433-739e-4807-bc6d-d83a65efbb55" alt="사용자 중심의 아키텍쳐"/>
+  <br><b><이미지 1, 사용자 중심의 아키텍쳐></b><br><br>
+
+  <img src="https://github.com/user-attachments/assets/0807cbae-07b3-4075-b294-b2848d3abbaa" alt="기능별 아키텍쳐"/>
+  <br><b><이미지 2, 사용자 중심의 기능별 아키텍쳐></b><br><br>
+
+  <img src="https://github.com/user-attachments/assets/0181d145-527b-489d-9800-a91a6dda6427" alt="시스템 아키텍쳐"/>
+  <br><b><이미지 3, 시스템 아키텍쳐></b><br><br>
+
+  <img src="https://github.com/user-attachments/assets/5daffed0-034b-4967-9e0d-3bfd4e94fa4d" alt="소프트웨어 아키텍쳐"/>
+  <br><b><이미지 4, 소프트웨어 아키텍쳐></b>
+</div>
+
+- 이미지 1 : 사용자 중심으로 어떤 기능을 주는 지에 대한 설계도
+- 이미지 2 : 사용자 중심으로 기능별 어떤 기능을 가지는지에 대한 설계도
+- 이미지 3 : 전체적인 시스템 설계도
+- 이미지 4 : 소프트웨어와 기능 간의 전체적인 설계도
+-  
+# 데모 영상
+    - 준비중
+
 # 프로젝트 문제점과 해결할 방안
 
 |이름|문제점|개선할 방안|역할|
